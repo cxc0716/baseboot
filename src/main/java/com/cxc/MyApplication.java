@@ -25,6 +25,6 @@ public class MyApplication extends SpringBootServletInitializer implements Comma
 	}
 
 	@Override public void run(String... strings) throws Exception {
-		System.out.println("here can execute init operate after application is up");
+		System.out.println("here can execute init operate once application is up");
 	}
 }
