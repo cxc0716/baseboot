@@ -1,6 +1,7 @@
 package com.cxc.service;
 
 import com.cxc.BaseTest;
+import com.cxc.common.service.RedisService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -14,17 +15,21 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  */
 public class RedisServiceTest extends BaseTest {
 
-	@Autowired
-	private RedisConnectionFactory redisConnectionFactory;
+//	@Autowired
+//	private RedisTemplate redisTemplate;
 
 	@Autowired
-	private RedisTemplate redisTemplate;
+	private RedisService redisService;
 
 	@Test
 	public void set(){
 //		template.opsForValue().set("loop-forever", "cxc");
 //		redisConnectionFactory.getConnection().set("loog-forever".getBytes(),"cxc".getBytes());
-		redisTemplate.opsForValue().set("loog-forever","xxx22");
+		redisService.getRedis().opsForValue().set("loog-forever","ffff");
+		System.out.println("set finish");
+		Object o = redisService.getRedis().opsForValue().get("loog-forever");
+		System.out.println("result-->"+o);
+
 		System.out.println("ok");
 	}
 
