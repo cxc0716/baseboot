@@ -1,8 +1,5 @@
 package com.cxc.common.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,12 +10,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class RedisService {
 
-	@Autowired
+/*	@Autowired
 	@Qualifier("redisTemplate")
 	private RedisTemplate redis;
 
 	public RedisTemplate getRedis(){
 		return redis;
-	}
+	}*/
 
 }

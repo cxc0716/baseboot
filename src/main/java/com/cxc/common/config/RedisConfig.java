@@ -1,17 +1,8 @@
 package com.cxc.common.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
-
-import javax.annotation.PostConstruct;
 
 /**
  * author:chenxinchao
@@ -22,7 +13,7 @@ import javax.annotation.PostConstruct;
 @EnableCaching
 public class RedisConfig extends CachingConfigurerSupport{
 
-	@Autowired
+	/*@Autowired
 	private RedisConnectionFactory factory;
 
 	@PostConstruct
@@ -47,6 +38,6 @@ public class RedisConfig extends CachingConfigurerSupport{
 //		template.setValueSerializer(jackson2JsonRedisSerializer);
 //		template.afterPropertiesSet();
 		return template;
-	}
+	}*/
 
 }

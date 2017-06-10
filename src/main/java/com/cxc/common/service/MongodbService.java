@@ -1,9 +1,5 @@
 package com.cxc.common.service;
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MongodbService {
 
-	@Autowired
+	/*@Autowired
 	private MongoDbFactory mongo;
 
 	public DB getDB(){
@@ -23,6 +19,6 @@ public class MongodbService {
 
 	public DBCollection  getCollection(String collectionName){
 		 return mongo.getDb().getCollection(collectionName);
-	}
+	}*/
 
 }
