@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Configuration;
  * date:2016-09-28 15:01
  * desc:com.cxc.common.service
  */
-@Configuration
-@EnableCaching
+//@Configuration
+//@EnableCaching
 public class RedisConfig extends CachingConfigurerSupport{
 
 	/*@Autowired

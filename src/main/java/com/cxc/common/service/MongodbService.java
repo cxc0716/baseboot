@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
  * date:2016-09-29 11:49
  * desc:com.cxc.common.service
  */
-@Component
+//@Component
 public class MongodbService {
 
 	/*@Autowired
