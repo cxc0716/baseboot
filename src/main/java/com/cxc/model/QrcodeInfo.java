@@ -8,6 +8,7 @@ package com.cxc.model;
 public class QrcodeInfo {
 	private String qrcode;
 	private String uuid;
+	private Integer contentId;
 
 	public String getQrcode() {
 		return qrcode;
@@ -23,5 +24,13 @@ public class QrcodeInfo {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public Integer getContentId() {
+		return contentId;
+	}
+
+	public void setContentId(Integer contentId) {
+		this.contentId = contentId;
 	}
 }
