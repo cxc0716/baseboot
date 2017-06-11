@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cxc.mapper.ContentMapper">
+    <resultMap id="Content" type="com.cxc.domain.Content">
+        <result property="id" column="id"/>
+        <result property="version" column="version"/>
+        <result property="text" column="text"/>
+        <result property="picUrl" column="picUrl"/>
+        <result property="sendType" column="sendType"/>
+        <result property="friendFlag" column="friendFlag"/>
+        <result property="sex" column="sex"/>
+        <result property="createTime" column="createTime"/>
+        <result property="deleted" column="deleted"/>
+        <result property="creator" column="creator"/>
+    </resultMap>
+
+</mapper>
