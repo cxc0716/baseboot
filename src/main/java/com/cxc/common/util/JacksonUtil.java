@@ -23,7 +23,7 @@ public class JacksonUtil {
 
 	static  {
 			objectMapper = new ObjectMapper();
-			objectMapper.enable(SerializationFeature.WRITE_NULL_MAP_VALUES);
+//			objectMapper.enable(SerializationFeature.WRITE_NULL_MAP_VALUES);
 			objectMapper.setDateFormat(new SimpleDateFormat(
 					"yyyy-MM-dd HH:mm:ss"));
 			//jackson 默认时间会少8小时，要设置timezone

@@ -27,7 +27,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -48,8 +50,8 @@ import java.util.Map;
  * <li>{@code executePost(url, parameters)}
  * <li>{@code executePost(url, parameters, charset)}
  * 
- * @author hzyurui
  */
+@Component
 public class HttpClientTemplate {
 
     private static final Logger logger = LoggerFactory
@@ -63,6 +65,7 @@ public class HttpClientTemplate {
 
     private String defaultCharset = "utf-8";
 
+    @PostConstruct
     public void init() {
         httpClient = HttpClients.custom()
             .setConnectionManager(connectionManager).build();
