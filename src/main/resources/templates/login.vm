@@ -1,1 +1,72 @@
-login page
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css" >
+    <link rel="stylesheet" type="text/css" href="/css/shoujisc.css" >
+    <script type="text/javascript" src="/js/jquery.js" ></script>
+    <link href="/css/sweetalert.css"  rel="stylesheet">
+    <link href="/css/layer.css" rel="stylesheet">
+
+    <style>
+    </style>
+</head>
+
+<body>
+<div id='container' style="display:none;"></div>
+<div class="sjsc-title2" style="height:50px;">
+    <h3 class="sjsc-t2l" style="line-height:50px; font-size:18px;">客通天下</h3>
+</div>
+
+<div class="delu-info2">
+    <form action="http://wxyx.lyfz.net/index.php/WxMass/mobileLogin" method="POST" data-type="ajax">
+        <ul class="delu-ul1">
+            <li class="delu-li1"><input style="width:100%;" type="text" id="user_name" name="user_name" placeholder="请输入您的账号" value=""/></li>
+            <li class="delu-li2"><input style="width:100%;" type="password" id="password" name="password" placeholder="请输入您的密码" value=""/></li>
+            <input style=" width:100%;" type="hidden" name="company_id" value=""/>
+        </ul>
+
+        <button type="submit" class="delu-btn1" style="margin-top:20px; font-size: 18px;">登录</button>
+    </form>
+    <div class="delu-p1">
+        <div style="clear:both;"></div>
+    </div>
+</div>
+
+<div style="position:fixed; width:100%; bottom:0px; height:30px; text-align:right;">
+    <center>Copyright xx提供技术支持 © 2017</center>
+</div>
+<script type="text/javascript">
+    $(document).on('submit','form[data-type=ajax]',function(){
+        var url = $(this).attr('action');
+        var data = $(this).serializeArray();
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: url,
+            data: data,
+            beforeSend:function(XMLHttpRequest){
+                layer.load();
+            },
+            success: function (obj) {
+                layer.closeAll();
+                if(obj.meta.code == 200){
+                    window.location.href='wxMassLogin.htm';
+                }else{
+                    alert(obj.meta.message);
+                }
+            },
+            error: function(data) {
+                layer.closeAll();
+                alert('网络错误');
+            }
+        });
+        return false;
+    });
+</script>
+</body>
+
+</html>
