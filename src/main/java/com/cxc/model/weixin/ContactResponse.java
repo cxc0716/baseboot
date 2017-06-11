@@ -4,7 +4,7 @@
  * Copyright 2017 Netease, Inc. All rights reserved.
  * NETEASE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
-package com.cxc.domain.weixin;
+package com.cxc.model.weixin;
 
 import java.util.List;
 

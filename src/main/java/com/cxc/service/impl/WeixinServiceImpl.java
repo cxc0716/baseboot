@@ -3,8 +3,8 @@ package com.cxc.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cxc.common.util.HttpClientTemplate;
-import com.cxc.domain.weixin.Contact;
-import com.cxc.domain.weixin.ContactResponse;
+import com.cxc.model.weixin.Contact;
+import com.cxc.model.weixin.ContactResponse;
 import com.cxc.service.WeixinService;
 
 import java.io.IOException;
