@@ -1,5 +1,6 @@
 package com.cxc.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -17,6 +18,9 @@ public class TokenInfo {
 	private String skey;
 	@JsonProperty(value = "DeviceID")
 	private String deviceID;
+
+	@JsonIgnore
+	private String passTicket;
 
 	public String getUin() {
 		return uin;
@@ -48,5 +52,13 @@ public class TokenInfo {
 
 	public void setDeviceID(String deviceID) {
 		this.deviceID = deviceID;
+	}
+
+	public String getPassTicket() {
+		return passTicket;
+	}
+
+	public void setPassTicket(String passTicket) {
+		this.passTicket = passTicket;
 	}
 }

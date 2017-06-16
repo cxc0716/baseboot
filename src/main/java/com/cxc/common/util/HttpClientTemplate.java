@@ -18,6 +18,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.FormBodyPart;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
@@ -688,7 +689,8 @@ public class HttpClientTemplate {
      * @param
      * @return
      */
-    @SuppressWarnings("Since15") public String executeFilePost(String url, List<NameValuePair> parameters,
+    @SuppressWarnings("Since15")
+    public String executeFilePost(String url, List<NameValuePair> parameters,
         File file) throws IOException {
 
         String result = "";
@@ -703,7 +705,6 @@ public class HttpClientTemplate {
                 HttpMultipartMode.BROWSER_COMPATIBLE, null,
                 Charset.forName("UTF-8"));
             reqEntity.addPart("file", bin);
-
             httpPost.setEntity(reqEntity);
 
             if (logger.isDebugEnabled()) {

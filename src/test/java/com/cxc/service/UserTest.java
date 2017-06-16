@@ -23,7 +23,7 @@ public class UserTest extends BaseTest {
 	public void update(){
 		HiUser user = new HiUser();
 		user.setId(1);
-		user.setName("陈新超");
+		user.setUserName("陈新超");
 
 //		userMapper.updateUserInfo(user);
 		userService.updateUserInfo(user);
