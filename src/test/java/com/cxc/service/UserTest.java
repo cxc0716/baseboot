@@ -1,7 +1,7 @@
 package com.cxc.service;
 
 import com.cxc.BaseTest;
-import com.cxc.domain.User;
+import com.cxc.domain.HiUser;
 import com.cxc.mapper.UserMapper;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class UserTest extends BaseTest {
 
 	@Test
 	public void update(){
-		User user = new User();
+		HiUser user = new HiUser();
 		user.setId(1);
 		user.setName("陈新超");
 

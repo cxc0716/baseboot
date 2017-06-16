@@ -3,13 +3,45 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cxc.mapper.UserMapper">
-    <select id="queryUserById" resultType="User">
-        select * from user where id = #{id}
+
+    <resultMap id="HiUserMap" type="HiUser">
+        <result property="id" column="id"/>
+        <result property="version" column="version"/>
+        <result property="userName" column="userName"/>
+        <result property="password" column="password"/>
+        <result property="country" column="country"/>
+        <result property="timeZone" column="timeZone"/>
+        <result property="accountEnabled" column="accountEnabled"/>
+        <result property="accountLocked" column="accountLocked"/>
+        <result property="expiredDate" column="expiredDate"/>
+        <result property="credentialsExpired" column="credentialsExpired"/>
+        <result property="fullName" column="fullName"/>
+        <result property="gender" column="gender"/>
+        <result property="address" column="address"/>
+        <result property="phone" column="phone"/>
+        <result property="mobile" column="mobile"/>
+        <result property="zip" column="zip"/>
+        <result property="SSN" column="SSN"/>
+        <result property="mail" column="mail"/>
+        <result property="userMgrType" column="userMgrType"/>
+        <result property="notifyMode" column="notifyMode"/>
+        <result property="description" column="description"/>
+        <result property="deleted" column="deleted"/>
+        <result property="creator" column="creator"/>
+    </resultMap>
+
+    <select id="queryUserById" parameterType="Integer" resultMap="HiUserMap">
+        select * from hi_user where id = #{id}
     </select>
-    <update id="updateUserInfo" parameterType="User">
-        update  user set name=#{name}
+    <update id="updateUserInfo" parameterType="HiUser">
+        update hi_user set password = #{password}
         <where>
-            id = #{id}
+            id = #{id} and password =#{oldPassword}
         </where>
     </update>
+
+    <select id="queryByUsernameAndPassword"
+            parameterType="HiUser" resultMap="HiUserMap">
+        select * from hi_user where userName=#{userName} and password=#{password}
+    </select>
 </mapper>

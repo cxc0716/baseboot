@@ -1,6 +1,6 @@
 package com.cxc.service;
 
-import com.cxc.domain.User;
+import com.cxc.domain.HiUser;
 
 /**
  * author:chenxinchao
@@ -9,8 +9,8 @@ import com.cxc.domain.User;
  */
 public interface UserService {
 
-	public User queryUserById(int id);
+	public HiUser queryUserById(int id);
 
-	public void updateUserInfo(User user);
+	public void updateUserInfo(HiUser user);
 
 }

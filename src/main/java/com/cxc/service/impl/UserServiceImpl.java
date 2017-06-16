@@ -1,6 +1,6 @@
 package com.cxc.service.impl;
 
-import com.cxc.domain.User;
+import com.cxc.domain.HiUser;
 import com.cxc.mapper.UserMapper;
 import com.cxc.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +18,15 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserMapper userMapper;
 
-	@Override public User queryUserById(int id) {
+	@Override public HiUser queryUserById(int id) {
 		return null;
 	}
 
 	@Transactional
-	@Override public void updateUserInfo(User user) {
+	@Override public void updateUserInfo(HiUser user) {
 		userMapper.updateUserInfo(user);
 
-		User user1 = userMapper.queryUserById(user.getId());
+		HiUser user1 = userMapper.queryUserById(user.getId());
 //		user1 = null;
 		System.out.println(user1.getName());
 	}

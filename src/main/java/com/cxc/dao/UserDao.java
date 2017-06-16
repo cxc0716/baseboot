@@ -1,6 +1,6 @@
 package com.cxc.dao;
 
-import com.cxc.domain.User;
+import com.cxc.domain.HiUser;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -15,7 +15,7 @@ public class UserDao {
 	@Autowired
 	private SqlSession sqlSession;
 
-	public User queryUserById(int id) {
+	public HiUser queryUserById(int id) {
 		return this.sqlSession.selectOne("queryUserById", id);
 	}
 

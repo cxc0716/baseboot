@@ -1,10 +1,8 @@
 package com.cxc.mapper;
 
 
-import com.cxc.domain.User;
+import com.cxc.domain.HiUser;
 import org.apache.ibatis.annotations.Mapper;
-
-import java.util.List;
 
 /**
  * author:chenxinchao
@@ -14,7 +12,7 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
 
-	public User queryUserById(int id);
+	public HiUser queryUserById(int id);
 
-	public void updateUserInfo(User user);
+	public void updateUserInfo(HiUser user);
 }
