@@ -6,6 +6,7 @@
  */
 package com.cxc.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,9 +53,17 @@ public class ContentController extends BaseController {
     @RequestMapping("/content/upload")
     public AjaxResult uploadPic(@RequestParam(value = "file", required = false) MultipartFile file,HttpServletRequest request){
         String path = "";
-//        DateFormatUtils.format(new Date(),"yyyy")
+        String format = DateFormatUtils.format(new Date(), "");
+        path = getUserId(request)+format;
         return initSuccessResult(path);
     }
+
+    private String getExt(String fileName){
+        int i = fileName.lastIndexOf(".");
+        return fileName.substring(i+1,fileName.length());
+    }
+
+
     @RequestMapping("/content/delete")
     public AjaxResult delete(Integer id){
         return initSuccessResult();
