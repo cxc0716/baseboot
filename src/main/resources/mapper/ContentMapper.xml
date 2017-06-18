@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cxc.mapper.ContentMapper">
-    <resultMap id="Content" type="com.cxc.domain.Content">
+    <resultMap id="ContentMap" type="Content">
         <result property="id" column="id"/>
         <result property="version" column="version"/>
         <result property="text" column="text"/>
@@ -16,4 +16,24 @@
         <result property="creator" column="creator"/>
     </resultMap>
 
+    <insert id="save" parameterType="Content">
+      INSERT INTO content(version,text,picUrl,sendType,friendFlag,sex,createTime,deleted,creator)
+      VALUES (1,#{text},#{picUrl},#{sendType},#{friendFlag},#{sex},now(),0,#{creator})
+    </insert>
+
+    <select id="queryByUserId" parameterType="Integer" resultMap="ContentMap">
+        select * from content where creator = #{uid} and deleted = 0
+        ORDER BY createTime desc;
+    </select>
+
+    <update id="deleteById" parameterType="Integer">
+        update content set deleted=1,verison=version+1 where id=#{id  }
+    </update>
+
+    <update id="update" parameterType="Content">
+      update content
+      set version=version+1,text=#{text},picUrl=#{picUrl},sendType=#{sendType},
+      friendFlag=#{friendFlag},sex=#{sex}
+      WHERE id=#{id}
+    </update>
 </mapper>

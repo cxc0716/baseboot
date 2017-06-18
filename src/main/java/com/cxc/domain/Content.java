@@ -3,6 +3,9 @@ package com.cxc.domain;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.Range;
+
 /**
  * author:chenxinchao
  * date:2017-06-11 12:01
@@ -11,10 +14,15 @@ import java.sql.Timestamp;
 public class Content implements Serializable {
 	private Integer id;
 	private  Integer version;
+	@NotBlank(message = "text不能为空")
 	private String text;
+	@NotBlank(message = "picUrl不能为空")
 	private String picUrl;
+	@Range(min = 0,max = 2,message = "sendType为1或2")
 	private Integer sendType;
+	@Range(min = 0,max = 2,message = "friendFlag为1或2")
 	private Integer friendFlag;
+	@Range(min = 0,max = 2,message = "sex只能在0-2之间")
 	private Integer sex;
 	private Timestamp createTime;
 	private Integer deleted;

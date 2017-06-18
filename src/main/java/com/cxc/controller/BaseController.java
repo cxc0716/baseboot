@@ -6,6 +6,8 @@
  */
 package com.cxc.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cxc.vo.AjaxResult;
 import com.cxc.vo.ResponseCode;
+import com.cxc.vo.UserSimpleInfo;
 
 /**
  * @author 陈新超(hzchenxinchao@corp.netease.com)
@@ -21,6 +24,18 @@ public class BaseController {
 
     private static final Logger logger = LoggerFactory
         .getLogger(BaseController.class);
+
+    protected UserSimpleInfo getLoginUser(HttpServletRequest request) {
+        return (UserSimpleInfo) request.getSession().getAttribute("user");
+    }
+
+    protected Integer getUserId(HttpServletRequest request) {
+        UserSimpleInfo loginUser = getLoginUser(request);
+        if (loginUser != null) {
+            return loginUser.getId();
+        }
+        return 0;
+    }
 
     /**
      * 初始化操作成功的AjaxResult
