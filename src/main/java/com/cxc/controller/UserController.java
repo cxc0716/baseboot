@@ -2,6 +2,9 @@ package com.cxc.controller;
 
 import com.cxc.domain.HiUser;
 import com.cxc.mapper.UserMapper;
+import com.cxc.service.UserService;
+import com.fasterxml.jackson.databind.deser.Deserializers;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,14 +18,14 @@ import javax.servlet.http.HttpServletResponse;
  */
 @RestController
 //@Controller
-public class UserController {
+public class UserController extends BaseController{
 
 	@Autowired
-	private UserMapper userMapper;
+	private UserService userService;
 
 	@RequestMapping(value = "/user")
 	public HiUser queryUserInfo(Integer userid,HttpServletRequest request,HttpServletResponse response){
-		HiUser user = userMapper.queryUserById(userid);
+		HiUser user = userService.queryUserById(userid);
 		return user;
 	}
 

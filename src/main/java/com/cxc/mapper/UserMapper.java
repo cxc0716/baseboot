@@ -14,5 +14,7 @@ public interface UserMapper {
 
 	public HiUser queryUserById(int id);
 
-	public void updateUserInfo(HiUser user);
+	public int updatePassword(HiUser user);
+
+	public HiUser queryByUsernameAndPassword(HiUser user);
 }

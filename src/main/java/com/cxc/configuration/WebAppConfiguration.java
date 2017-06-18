@@ -8,6 +8,7 @@ package com.cxc.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.cxc.interceptor.LoginInterceptor;
@@ -21,7 +22,12 @@ public class WebAppConfiguration extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/**")
-            .excludePathPatterns("/login", "/logout","/static/**");
+            .excludePathPatterns("/login","/doLogin", "/logout","/static/**");
         super.addInterceptors(registry);
+    }
+
+    @Override public void addResourceHandlers(
+        ResourceHandlerRegistry registry) {
+        super.addResourceHandlers(registry);
     }
 }

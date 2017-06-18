@@ -21,6 +21,8 @@ public class TokenInfo {
 
 	@JsonIgnore
 	private String passTicket;
+	@JsonIgnore
+	private String dataTicket;
 
 	public String getUin() {
 		return uin;
@@ -60,5 +62,13 @@ public class TokenInfo {
 
 	public void setPassTicket(String passTicket) {
 		this.passTicket = passTicket;
+	}
+
+	public String getDataTicket() {
+		return dataTicket;
+	}
+
+	public void setDataTicket(String dataTicket) {
+		this.dataTicket = dataTicket;
 	}
 }

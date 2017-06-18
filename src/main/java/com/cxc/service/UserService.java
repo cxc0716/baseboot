@@ -11,6 +11,8 @@ public interface UserService {
 
 	public HiUser queryUserById(int id);
 
-	public void updateUserInfo(HiUser user);
+	public boolean updateUserInfo(HiUser user);
+
+	public HiUser queryByUsernameAndPassword(HiUser user);
 
 }
