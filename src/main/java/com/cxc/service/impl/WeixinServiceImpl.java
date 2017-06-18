@@ -11,10 +11,14 @@ import com.cxc.model.QrcodeInfo;
 import com.cxc.model.TokenInfo;
 import com.cxc.model.weixin.Contact;
 import com.cxc.model.weixin.ContactResponse;
+import com.cxc.model.weixin.UploadResponse;
 import com.cxc.service.WeixinService;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
@@ -23,10 +27,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.security.MessageDigest;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import sun.misc.IOUtils;
 
 /**
  * author:chenxinchao date:2017-06-10 21:07 desc:com.cxc.service.impl
@@ -75,7 +89,7 @@ public class WeixinServiceImpl implements WeixinService {
         List<Contact> contactList = getContactList(loginInitInfo);
         List<Contact> contacts = filterContact(contactList, content);
         if (!CollectionUtils.isEmpty(contacts)) {
-            for (Contact contact : contacts) {
+            for (Contact contact: contacts) {
                 PostBody postBody = new PostBody();
                 postBody.setBaseRequest(loginInitInfo);
                 MsgInfo msgInfo = new MsgInfo();
@@ -84,7 +98,9 @@ public class WeixinServiceImpl implements WeixinService {
                 msgInfo.setContent(content.getText());
                 postBody.setMsg(msgInfo);
                 postBody.setScene(0);
-                sendSingleMsg(loginInitInfo.getPassTicket(),postBody);
+                uploadFile(loginInitInfo, userName, contact.getUserName(),
+                    new File("D://test.png"));
+                //                sendSingleMsg(loginInitInfo.getPassTicket(), postBody);
             }
         }
         return true;
@@ -127,7 +143,9 @@ public class WeixinServiceImpl implements WeixinService {
         throws IOException {
         String loginPage = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=%s&uuid=%s&lang=zh_CN&scan=1496898816&fun=new&version=v2&lang=zh_CN";
         String loginPage2 = String.format(loginPage, ticket, uuid);
-        String s3 = httpClientTemplate.executeGet(loginPage2);
+        Map<String, String> result = httpClientTemplate
+            .getBodyAndCookieByPost(loginPage2, null);
+        String s3 = result.get("body");
         //解析skey
         String skey = s3.substring(s3.indexOf("<skey>") + 6,
             s3.indexOf("</skey>"));
@@ -144,11 +162,10 @@ public class WeixinServiceImpl implements WeixinService {
         tokenInfo.setUin(uin);
         tokenInfo.setPassTicket(passTicket);
         tokenInfo.setDeviceID(deviceID);
-        //todo 获取cookie信息
-
-
+        //获取cookie信息
+        tokenInfo.setDataTicket(result.get("dataTicket"));
+        System.out.println(">>>>>>>dataticket=" + result.get("dataTicket"));
         return tokenInfo;
-
     }
 
     private String getInitInfo(TokenInfo loginInitInfo) throws IOException {
@@ -158,7 +175,7 @@ public class WeixinServiceImpl implements WeixinService {
         postBody.setBaseRequest(loginInitInfo);
         String body = JacksonUtil.write(postBody);
         String s4 = httpClientTemplate.executePost(initUrl, body, "utf-8");
-        System.out.println("s4--->"+s4);
+        System.out.println("s4--->" + s4);
         JSONObject jsonObject = JSON.parseObject(s4);
         String fromUsername = jsonObject.getJSONObject("User").get("UserName")
             .toString();
@@ -191,7 +208,6 @@ public class WeixinServiceImpl implements WeixinService {
         return list;
     }
 
-
     private boolean sendSingleMsg(String passTicket, PostBody body) {
         try {
             String sendMsg = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsendmsg?lang=zh_CN&pass_ticket=%s";
@@ -205,16 +221,90 @@ public class WeixinServiceImpl implements WeixinService {
         }
     }
 
-    private boolean uploadFile() throws IOException {
+    /**
+     * { "UploadType": 2, "BaseRequest": { "Uin": 163107255, "Sid":
+     * "HHRzbR3c4GsYp0Ed", "Skey":
+     * "@crypt_d5fcbef7_047647f5438dbf0203e4eafc5b6f80db", "DeviceID":
+     * "e262698196450725" }, "ClientMediaId": 1497242935860, "TotalLen": 63931,
+     * "StartPos": 0, "DataLen": 63931, "MediaType": 4, "FromUserName":
+     * "@1a660b35c6fe43e472878303edfad1d2", "ToUserName":
+     * "@bb81e040f5a95c3a08957b7106dcc22a", "FileMd5":
+     * "bf3b7f2de804b3544fc4d49876e016e9" }
+     * 
+     * @param tokenInfo
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    private String uploadFile(TokenInfo tokenInfo, String from, String to,
+        File file) throws IOException {
         String uploadUrl = "https://file.wx.qq.com/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json";
         List<NameValuePair> parameters = Lists.newArrayList();
-        parameters.add(new BasicNameValuePair("",""));
-        httpClientTemplate.executeFilePost(uploadUrl,null,new File("D://a.jpeg"));
-        return true;
+        parameters.add(new BasicNameValuePair("id", "WU_FILE_0"));
+        parameters.add(new BasicNameValuePair("name", file.getName()));
+        String type = "image/" + getExtWithoutDot(file.getName());
+        parameters.add(new BasicNameValuePair("type", type));
+        String format = DateFormatUtils.format(new Date(),
+            "EEE MMM dd yyyy hh:mm:ss 'GMT+0800 (CST)'", Locale.ENGLISH);
+        parameters.add(new BasicNameValuePair("lastModifiedDate", format));
+        parameters.add(new BasicNameValuePair("size", file.length() + ""));
+        parameters.add(new BasicNameValuePair("mediatype", "pic"));
+        parameters.add(new BasicNameValuePair("webwx_data_ticket",
+            tokenInfo.getDataTicket()));
+        parameters.add(
+            new BasicNameValuePair("pass_ticket", tokenInfo.getPassTicket()));
+        parameters.add(new BasicNameValuePair("filename", file.getName()));
+
+        Map<String, Object> map = Maps.newHashMap();
+        map.put("UploadType", 2);
+        map.put("BaseRequest", tokenInfo);
+        map.put("ClientMediaId", System.currentTimeMillis());
+        map.put("TotalLen", file.length());
+        map.put("DataLen", file.length());
+        map.put("StartPos", 0);
+        map.put("MediaType", 4);
+        map.put("FromUserName", from);
+        map.put("ToUserName", to);
+        map.put("FileMd5", getFileMd5(file));
+        parameters.add(new BasicNameValuePair("uploadmediarequest",
+            JacksonUtil.write(map)));
+        String s = httpClientTemplate.executeFilePost(uploadUrl, parameters,
+            file, type);
+        System.out.println("upload>>>>" + s);
+        UploadResponse read = JacksonUtil.read(s, UploadResponse.class);
+        if (read.getBaseResponse().getRet() == 0) {
+            return read.getMediaId();
+        }
+        return null;
     }
 
-    public HttpClientTemplate getHttpClientTemplate() {
-        return httpClientTemplate;
+    private String getExtWithoutDot(String fileName) {
+        int i = fileName.lastIndexOf(".");
+        return fileName.substring(i + 1, fileName.length());
+    }
+
+    private String getFileMd5(File file) throws FileNotFoundException {
+        String value = null;
+        FileInputStream in = new FileInputStream(file);
+        try {
+            MappedByteBuffer byteBuffer = in.getChannel()
+                .map(FileChannel.MapMode.READ_ONLY, 0, file.length());
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            md5.update(byteBuffer);
+            BigInteger bi = new BigInteger(1, md5.digest());
+            value = bi.toString(16);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (null != in) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return value;
     }
 
     public void setHttpClientTemplate(HttpClientTemplate httpClientTemplate) {

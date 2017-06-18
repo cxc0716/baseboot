@@ -1,11 +1,17 @@
 package com.cxc.service.impl;
 
+import java.io.File;
+import java.util.Date;
+import java.util.Locale;
+
 import com.cxc.common.util.HttpClientTemplate;
 import com.cxc.domain.Content;
 import com.cxc.domain.HiUser;
 import com.cxc.mapper.UserMapper;
 import com.cxc.model.QrcodeInfo;
 import com.cxc.service.UserService;
+
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +43,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public static void main(String[] args) {
-        HttpClientTemplate httpClientTemplate = new HttpClientTemplate();
+       HttpClientTemplate httpClientTemplate = new HttpClientTemplate();
         httpClientTemplate.init();
 
         WeixinServiceImpl weixinService = new WeixinServiceImpl();
@@ -53,5 +59,6 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 }

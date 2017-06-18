@@ -7,6 +7,9 @@
 package com.cxc.common.util;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Maps;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -22,6 +25,7 @@ import org.apache.http.entity.mime.FormBodyPart;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
@@ -50,7 +54,6 @@ import java.util.Map;
  * <li>{@code executePost(url)}
  * <li>{@code executePost(url, parameters)}
  * <li>{@code executePost(url, parameters, charset)}
- * 
  */
 @Component
 public class HttpClientTemplate {
@@ -581,7 +584,6 @@ public class HttpClientTemplate {
      * 
      * @param httpResponse
      *            响应
-
      * @return
      * @throws IOException
      */
@@ -610,7 +612,7 @@ public class HttpClientTemplate {
         }
         int statusCode = statusLine.getStatusCode();
         if (statusCode < 200 || statusCode > 299) {
-//            EntityUtils.consumeQuietly(httpResponse.getEntity());
+            //            EntityUtils.consumeQuietly(httpResponse.getEntity());
             logger.error(
                 "[op: getResponseContentEntity] http request fail, respond={}",
                 JSON.toJSON(statusLine));
@@ -618,8 +620,10 @@ public class HttpClientTemplate {
         }
         Header[] allHeaders = httpResponse.getAllHeaders();
         System.out.println("print header begin ");
-        for (Header allHeader : allHeaders) {
-            System.out.println(allHeader.toString());
+        for (Header allHeader: allHeaders) {
+            System.out.println(allHeader.getName() + "###"
+                + allHeader.getValue() + "###" + allHeader.getElements());
+            System.out.println(">>>>>>");
         }
         System.out.println("print header end");
         return httpResponse.getEntity();
@@ -671,7 +675,7 @@ public class HttpClientTemplate {
 
         File file = new File(filePath);
         if (file.exists()) {
-            return executeFilePost(url, parameters, file);
+            return executeFilePost(url, parameters, file,null);
         } else {
             logger.error(
                 "[op:executeFilePost] HttpClientTemplate.executeFilePost  file is not exist! filePath={} ",
@@ -684,27 +688,36 @@ public class HttpClientTemplate {
      * 文件传输post请求
      * <p>
      * 执行无参数的POST请求传输文件，并将响应实体以字符串返回
-     * 
+     *
      * @param url
      * @param
      * @return
      */
     @SuppressWarnings("Since15")
     public String executeFilePost(String url, List<NameValuePair> parameters,
-        File file) throws IOException {
+        File file,String contentType) throws IOException {
 
         String result = "";
 
         if (file != null && file.exists()) {
 
             HttpPost httpPost = getHttpPost(url);
-
+            if(StringUtils.isNotBlank(contentType)){
+             httpPost.setHeader("Content-Type",contentType);
+            }
             FileBody bin = new FileBody(file);
 
             MultipartEntity reqEntity = new MultipartEntity(
                 HttpMultipartMode.BROWSER_COMPATIBLE, null,
                 Charset.forName("UTF-8"));
-            reqEntity.addPart("file", bin);
+            reqEntity.addPart("file",bin);
+            if(parameters != null){
+                for (NameValuePair parameter : parameters) {
+                    StringBody stringBody = new StringBody(
+                        parameter.getValue());
+                    reqEntity.addPart(parameter.getName(),stringBody);
+                }
+            }
             httpPost.setEntity(reqEntity);
 
             if (logger.isDebugEnabled()) {
@@ -752,5 +765,29 @@ public class HttpClientTemplate {
                 url, JSON.toJSON(parameters));
         }
         return httpResponse;
+    }
+
+    public Map<String, String> getBodyAndCookieByPost(String url,
+        String stringEntity) throws IOException {
+        Map<String, String> resultMap = Maps.newHashMap();
+        String charset = "utf-8";
+        HttpPost postRequest = makePostRequest(url, stringEntity, charset,
+            timeout);
+        HttpResponse httpResponse = httpClient.execute(postRequest);
+        Header[] headers = httpResponse.getHeaders("Set-Cookie");
+        if (headers != null) {
+            for (Header header: headers) {
+                String value = header.getValue();
+                if (value.contains("webwx_data_ticket")) {
+                    String[] split = value.split(";");
+                    String[] tickets = split[0].split("=");
+                    resultMap.put("dataTicket", tickets[1]);
+                    break;
+                }
+            }
+        }
+        String respBody = getResponseContentStr(httpResponse, charset);
+        resultMap.put("body", respBody);
+        return resultMap;
     }
 }
