@@ -268,6 +268,9 @@ public class WeixinServiceImpl implements WeixinService {
         map.put("FileMd5", getFileMd5(file));
         parameters.add(new BasicNameValuePair("uploadmediarequest",
             JacksonUtil.write(map)));
+        System.out.println("uploadmediarequest>>>"+JacksonUtil.write(map));
+        String s0 = httpClientTemplate.executeGet(uploadUrl);
+        System.out.println("upload0>>>"+s0);
         String s = httpClientTemplate.executeFilePost(uploadUrl, parameters,
             file, type);
         System.out.println("upload>>>>" + s);
