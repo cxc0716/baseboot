@@ -1,5 +1,6 @@
 package com.cxc.controller;
 
+import com.cxc.common.util.PasswordEncoder;
 import com.cxc.domain.HiUser;
 import com.cxc.mapper.UserMapper;
 import com.cxc.service.UserService;
@@ -13,20 +14,35 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * author:chenxinchao
- * date:2016-09-21 16:49
- * desc:com.cxc.controller
+ * author:chenxinchao date:2016-09-21 16:49 desc:com.cxc.controller
  */
 @RestController
-//@Controller
-public class UserController extends BaseController{
+public class UserController extends BaseController {
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	@RequestMapping(value = "/user/updatePwd")
-	public AjaxResult queryUserInfo(String newPassword,String oldPassword,HttpServletRequest request,HttpServletResponse response){
-		return initSuccessResult();
-	}
+    @RequestMapping(value = "/user/updatePwd")
+    public AjaxResult updateUserInfo(String newPassword, String oldPassword,
+        HttpServletRequest request, HttpServletResponse response) {
+        try {
+            Integer userId = getUserId(request);
+            HiUser hiUser = userService.queryUserById(userId);
+            if(hiUser  == null){
+                return initFailureResult("用户不存在");
+            }
+            String password = hiUser.getPassword();
+            oldPassword = PasswordEncoder.encodeMd5Password(oldPassword);
+            if(!oldPassword.equals(password)){
+                return initFailureResult("旧密码不正确");
+            }
+            hiUser.setPassword(PasswordEncoder.encodeMd5Password(newPassword));
+            userService.updateUserInfo(hiUser);
+            return initSuccessResult();
+        } catch (Exception e) {
+            logger.error("[updatePwd]:",e);
+            return initFailureResult("修改密码失败");
+        }
+    }
 
 }

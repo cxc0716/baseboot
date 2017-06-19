@@ -6,6 +6,8 @@
  */
 package com.cxc.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +29,7 @@ import com.cxc.service.ContentService;
 import com.cxc.service.WeixinService;
 import com.cxc.vo.AjaxResult;
 import com.cxc.vo.UserSimpleInfo;
+import com.google.common.collect.Lists;
 
 /**
  * @author 陈新超(hzchenxinchao@corp.netease.com)
@@ -35,38 +38,76 @@ import com.cxc.vo.UserSimpleInfo;
 public class ContentController extends BaseController {
     @Autowired
     private ContentService contentService;
+
     @Value("${upload.file.path}")
     private String filePath;
 
     @RequestMapping("/content/list")
-    public AjaxResult list(HttpServletRequest request) {
-        List<Content> contents = contentService.queryListByUid(getUserId(request));
-        return initSuccessResult();
+    public String list(HttpServletRequest request) {
+        try {
+            List<Content> contents = contentService
+                .queryListByUid(getUserId(request));
+            request.setAttribute("list", contents);
+        } catch (Exception e) {
+            request.setAttribute("list", Lists.newArrayList());
+        }
+        return "main";
     }
 
     @RequestMapping("/content/upsert")
+    @ResponseBody
     public AjaxResult upsert(@Valid Content content,
         BindingResult bindingResult) {
-        return initSuccessResult();
+        if (bindingResult.hasErrors()) {
+            return initFailureResult(
+                bindingResult.getFieldError().getDefaultMessage());
+        }
+        try {
+            if (content.getId() == null) {
+                contentService.save(content);
+                return initSuccessResult("保存成功");
+            } else {
+                contentService.update(content);
+                return initSuccessResult("更新成功");
+            }
+        } catch (Exception e) {
+            return initFailureResult(e.getMessage());
+        }
     }
 
     @RequestMapping("/content/upload")
-    public AjaxResult uploadPic(@RequestParam(value = "file", required = false) MultipartFile file,HttpServletRequest request){
-        String path = "";
-        String format = DateFormatUtils.format(new Date(), "");
-        path = getUserId(request)+format;
-        return initSuccessResult(path);
+    @ResponseBody
+    public AjaxResult uploadPic(
+        @RequestParam(value = "file", required = false) MultipartFile file,
+        HttpServletRequest request) {
+        try {
+            String datetime = DateFormatUtils.format(new Date(),
+                "yyyyMMddHHmmss");
+            String path = getUserId(request) + datetime
+                + getExt(file.getOriginalFilename());
+            file.transferTo(new File(filePath + "/" + path));
+            return initSuccessResult(path);
+        } catch (IOException e) {
+            return initFailureResult(e.getMessage());
+        }
     }
-
-    private String getExt(String fileName){
-        int i = fileName.lastIndexOf(".");
-        return fileName.substring(i+1,fileName.length());
-    }
-
 
     @RequestMapping("/content/delete")
-    public AjaxResult delete(Integer id){
-        return initSuccessResult();
+    @ResponseBody
+    public AjaxResult delete(Integer id) {
+        if (id == null) {
+            return initFailureResult("id cannot be null");
+        }
+        try {
+            contentService.deleteById(id);
+            return initSuccessResult("删除成功");
+        } catch (Exception e) {
+            return initFailureResult(e.getMessage());
+        }
     }
 
+    private String getExt(String fileName) {
+        int i = fileName.lastIndexOf(".");
+        return fileName.substring(i + 1, fileName.length());
+    }
 }

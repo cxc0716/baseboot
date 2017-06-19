@@ -23,7 +23,7 @@
 
     <select id="queryByUserId" parameterType="Integer" resultMap="ContentMap">
         select * from content where creator = #{uid} and deleted = 0
-        ORDER BY createTime desc;
+        ORDER BY createTime desc limit 100;
     </select>
 
     <update id="deleteById" parameterType="Integer">

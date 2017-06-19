@@ -22,7 +22,7 @@ import com.cxc.vo.UserSimpleInfo;
  */
 public class BaseController {
 
-    private static final Logger logger = LoggerFactory
+    protected static final Logger logger = LoggerFactory
         .getLogger(BaseController.class);
 
     protected UserSimpleInfo getLoginUser(HttpServletRequest request) {
