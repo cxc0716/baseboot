@@ -245,7 +245,7 @@ public class WeixinServiceImpl implements WeixinService {
         String type = "image/" + getExtWithoutDot(file.getName());
         parameters.add(new BasicNameValuePair("type", type));
         String format = DateFormatUtils.format(new Date(),
-            "EEE MMM dd yyyy hh:mm:ss 'GMT+0800 (CST)'", Locale.ENGLISH);
+            "EEE MMM dd yyyy hh:mm:ss 'GMT+0800 (中国标准时间)'", Locale.ENGLISH);
         parameters.add(new BasicNameValuePair("lastModifiedDate", format));
         parameters.add(new BasicNameValuePair("size", file.length() + ""));
         parameters.add(new BasicNameValuePair("mediatype", "pic"));
@@ -268,6 +268,9 @@ public class WeixinServiceImpl implements WeixinService {
         map.put("FileMd5", getFileMd5(file));
         parameters.add(new BasicNameValuePair("uploadmediarequest",
             JacksonUtil.write(map)));
+        System.out.println("uploadmediarequest>>>"+JacksonUtil.write(map));
+        String s0 = httpClientTemplate.executeGet(uploadUrl);
+        System.out.println("upload0>>>"+s0);
         String s = httpClientTemplate.executeFilePost(uploadUrl, parameters,
             file, type);
         System.out.println("upload>>>>" + s);

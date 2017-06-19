@@ -702,19 +702,16 @@ public class HttpClientTemplate {
         if (file != null && file.exists()) {
 
             HttpPost httpPost = getHttpPost(url);
-            if(StringUtils.isNotBlank(contentType)){
-             httpPost.setHeader("Content-Type",contentType);
-            }
-            FileBody bin = new FileBody(file);
-
+            FileBody bin = new FileBody(file,contentType);
             MultipartEntity reqEntity = new MultipartEntity(
                 HttpMultipartMode.BROWSER_COMPATIBLE, null,
                 Charset.forName("UTF-8"));
-            reqEntity.addPart("file",bin);
+            reqEntity.addPart("filename",bin);
+
             if(parameters != null){
                 for (NameValuePair parameter : parameters) {
                     StringBody stringBody = new StringBody(
-                        parameter.getValue());
+                        parameter.getValue(),Charset.forName("UTF-8"));
                     reqEntity.addPart(parameter.getName(),stringBody);
                 }
             }
