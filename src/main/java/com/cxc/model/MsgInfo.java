@@ -76,4 +76,12 @@ public class MsgInfo {
 	public void setClientMsgId(String clientMsgId) {
 		ClientMsgId = clientMsgId;
 	}
+
+	public String getMediaId() {
+		return MediaId;
+	}
+
+	public void setMediaId(String mediaId) {
+		MediaId = mediaId;
+	}
 }

@@ -675,7 +675,7 @@ public class HttpClientTemplate {
 
         File file = new File(filePath);
         if (file.exists()) {
-            return executeFilePost(url, parameters, file,null);
+            return executeFilePost(url, parameters, file, null);
         } else {
             logger.error(
                 "[op:executeFilePost] HttpClientTemplate.executeFilePost  file is not exist! filePath={} ",
@@ -695,24 +695,29 @@ public class HttpClientTemplate {
      */
     @SuppressWarnings("Since15")
     public String executeFilePost(String url, List<NameValuePair> parameters,
-        File file,String contentType) throws IOException {
+        File file, String contentType) throws IOException {
 
         String result = "";
 
         if (file != null && file.exists()) {
 
             HttpPost httpPost = getHttpPost(url);
-            FileBody bin = new FileBody(file,contentType);
-            MultipartEntity reqEntity = new MultipartEntity(
-                HttpMultipartMode.BROWSER_COMPATIBLE, null,
-                Charset.forName("UTF-8"));
-            reqEntity.addPart("filename",bin);
+           /* httpPost.setHeader("User-Agent",
+                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36");
+            httpPost.setHeader("Referer","https://wx.qq.com/");
+            httpPost.setHeader("Origin","https://wx.qq.com");*/
+            FileBody bin = new FileBody(file, contentType);
+//            MultipartEntity reqEntity = new MultipartEntity(
+//                HttpMultipartMode.BROWSER_COMPATIBLE, null,
+//                Charset.forName("UTF-8"));
+            MultipartEntity reqEntity = new MultipartEntity();
+            reqEntity.addPart("filename", bin);
 
-            if(parameters != null){
-                for (NameValuePair parameter : parameters) {
-                    StringBody stringBody = new StringBody(
-                        parameter.getValue(),Charset.forName("UTF-8"));
-                    reqEntity.addPart(parameter.getName(),stringBody);
+            if (parameters != null) {
+                for (NameValuePair parameter: parameters) {
+                    StringBody stringBody = new StringBody(parameter.getValue(),
+                        Charset.forName("UTF-8"));
+                    reqEntity.addPart(parameter.getName(), stringBody);
                 }
             }
             httpPost.setEntity(reqEntity);

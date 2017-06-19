@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TokenInfo {
 
 	@JsonProperty(value = "Uin")
-	private String uin;
+	private long uin;
 	@JsonProperty(value = "Sid")
 	private String sid;
 	@JsonProperty(value = "Skey")
@@ -24,11 +24,11 @@ public class TokenInfo {
 	@JsonIgnore
 	private String dataTicket;
 
-	public String getUin() {
+	public long getUin() {
 		return uin;
 	}
 
-	public void setUin(String uin) {
+	public void setUin(long uin) {
 		this.uin = uin;
 	}
 

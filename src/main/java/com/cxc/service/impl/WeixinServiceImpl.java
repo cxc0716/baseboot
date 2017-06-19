@@ -98,9 +98,10 @@ public class WeixinServiceImpl implements WeixinService {
                 msgInfo.setContent(content.getText());
                 postBody.setMsg(msgInfo);
                 postBody.setScene(0);
-                uploadFile(loginInitInfo, userName, contact.getUserName(),
-                    new File("D://test.png"));
-                //                sendSingleMsg(loginInitInfo.getPassTicket(), postBody);
+                sendSingleMsg(loginInitInfo.getPassTicket(), postBody);
+                if(StringUtils.isNotBlank(content.getPicUrl())){
+                    sendPicMsg(loginInitInfo,postBody,content.getPicUrl());
+                }
             }
         }
         return true;
@@ -159,12 +160,11 @@ public class WeixinServiceImpl implements WeixinService {
         TokenInfo tokenInfo = new TokenInfo();
         tokenInfo.setSkey(skey);
         tokenInfo.setSid(sid);
-        tokenInfo.setUin(uin);
+        tokenInfo.setUin(Long.valueOf(uin));
         tokenInfo.setPassTicket(passTicket);
         tokenInfo.setDeviceID(deviceID);
         //获取cookie信息
         tokenInfo.setDataTicket(result.get("dataTicket"));
-        System.out.println(">>>>>>>dataticket=" + result.get("dataTicket"));
         return tokenInfo;
     }
 
@@ -220,17 +220,20 @@ public class WeixinServiceImpl implements WeixinService {
             return false;
         }
     }
-
+    private boolean sendPicMsg(TokenInfo tokenInfo, PostBody body,String filePath){
+        try {
+            String mediaId = uploadFile(tokenInfo,body.getMsg().getFromUserName(),body.getMsg().getToUserName(),new File(filePath));
+            if(StringUtils.isNotBlank(mediaId)){
+                body.getMsg().setMediaId(mediaId);
+                return sendMedia(tokenInfo.getPassTicket(),body);
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error("[op:sendPicMsg]:",e);
+            return false;
+        }
+    }
     /**
-     * { "UploadType": 2, "BaseRequest": { "Uin": 163107255, "Sid":
-     * "HHRzbR3c4GsYp0Ed", "Skey":
-     * "@crypt_d5fcbef7_047647f5438dbf0203e4eafc5b6f80db", "DeviceID":
-     * "e262698196450725" }, "ClientMediaId": 1497242935860, "TotalLen": 63931,
-     * "StartPos": 0, "DataLen": 63931, "MediaType": 4, "FromUserName":
-     * "@1a660b35c6fe43e472878303edfad1d2", "ToUserName":
-     * "@bb81e040f5a95c3a08957b7106dcc22a", "FileMd5":
-     * "bf3b7f2de804b3544fc4d49876e016e9" }
-     * 
      * @param tokenInfo
      * @param file
      * @return
@@ -245,7 +248,7 @@ public class WeixinServiceImpl implements WeixinService {
         String type = "image/" + getExtWithoutDot(file.getName());
         parameters.add(new BasicNameValuePair("type", type));
         String format = DateFormatUtils.format(new Date(),
-            "EEE MMM dd yyyy hh:mm:ss 'GMT+0800 (中国标准时间)'", Locale.ENGLISH);
+            "EEE MMM dd yyyy hh:mm:ss 'GMT+0800 (CST)'", Locale.ENGLISH);
         parameters.add(new BasicNameValuePair("lastModifiedDate", format));
         parameters.add(new BasicNameValuePair("size", file.length() + ""));
         parameters.add(new BasicNameValuePair("mediatype", "pic"));
@@ -268,9 +271,6 @@ public class WeixinServiceImpl implements WeixinService {
         map.put("FileMd5", getFileMd5(file));
         parameters.add(new BasicNameValuePair("uploadmediarequest",
             JacksonUtil.write(map)));
-        System.out.println("uploadmediarequest>>>"+JacksonUtil.write(map));
-        String s0 = httpClientTemplate.executeGet(uploadUrl);
-        System.out.println("upload0>>>"+s0);
         String s = httpClientTemplate.executeFilePost(uploadUrl, parameters,
             file, type);
         System.out.println("upload>>>>" + s);
@@ -279,6 +279,20 @@ public class WeixinServiceImpl implements WeixinService {
             return read.getMediaId();
         }
         return null;
+    }
+
+    private boolean sendMedia(String passTicket, PostBody body)
+        throws IOException {
+        String url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsendmsgimg?fun=async&f=json&pass_ticket=%s";
+        url = String.format(url, passTicket);
+        body.getMsg().setType(3);
+        String result = httpClientTemplate.executePost(url,
+            JacksonUtil.write(body), "utf-8");
+        ContactResponse read = JacksonUtil.read(result, ContactResponse.class);
+        if (read != null && read.getBaseResponse().getRet() == 0) {
+            return true;
+        }
+        return false;
     }
 
     private String getExtWithoutDot(String fileName) {
