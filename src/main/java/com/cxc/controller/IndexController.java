@@ -83,7 +83,8 @@ public class IndexController extends BaseController {
     @RequestMapping("/logout")
     public String logout(HttpServletRequest request,
         HttpServletResponse response) {
-        System.out.println("logout");
+        request.getSession().removeAttribute("user");
+        request.getSession().invalidate();
         return "login";
     }
 }
