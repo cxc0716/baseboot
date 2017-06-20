@@ -6,19 +6,37 @@
  */
 package com.cxc.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.cxc.model.QrcodeInfo;
 import com.cxc.service.WeixinService;
+import com.cxc.vo.AjaxResult;
 
 /**
  * @author 陈新超(hzchenxinchao@corp.netease.com)
  */
-@Controller
+@RestController
+@RequestMapping("/wx")
 public class WeixinController extends BaseController {
 
     @Autowired
     private WeixinService weixinService;
 
-
+    @RequestMapping("/qrcode")
+    public AjaxResult getQrcode(Integer id, HttpServletRequest request) {
+        try {
+            QrcodeInfo qrcodeInfo = weixinService.getQrcodeInfo();
+            qrcodeInfo.setContentId(id);
+            qrcodeInfo.setTimeSec(120);
+            return initSuccessResult(qrcodeInfo);
+        } catch (Exception e) {
+            logger.error("[qrcode]", e);
+            return initFailureResult(e.getMessage());
+        }
+    }
 }
