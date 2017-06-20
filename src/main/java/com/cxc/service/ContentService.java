@@ -20,4 +20,6 @@ public interface ContentService {
     boolean deleteById(Integer id);
 
     boolean update(Content content);
+
+    Content getById(Integer id);
 }

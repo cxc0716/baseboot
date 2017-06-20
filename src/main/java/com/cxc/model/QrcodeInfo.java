@@ -12,6 +12,8 @@ public class QrcodeInfo {
 
     private Integer timeSec;
 
+    private Long currentTime;
+
     public String getQrcode() {
         return qrcode;
     }
@@ -43,5 +45,13 @@ public class QrcodeInfo {
 
     public void setTimeSec(Integer timeSec) {
         this.timeSec = timeSec;
+    }
+
+    public Long getCurrentTime() {
+        return currentTime;
+    }
+
+    public void setCurrentTime(Long currentTime) {
+        this.currentTime = currentTime;
     }
 }

@@ -24,6 +24,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.cxc.common.constant.CommonConstant;
 import com.cxc.common.util.HttpClientTemplate;
 import com.cxc.common.util.JacksonUtil;
 import com.cxc.domain.Content;
@@ -77,7 +78,7 @@ public class WeixinServiceImpl implements WeixinService {
     public Boolean sendMsg(String uuid, Content content) throws Exception {
         String ticket = waitAndGetTicket(uuid);
         if (StringUtils.isBlank(ticket)) {
-            throw new Exception("扫描超时");
+            throw new Exception("扫描超时，请刷新二维码重新扫描");
         }
         TokenInfo loginInitInfo = getLoginInitInfo(uuid, ticket);
 
@@ -108,7 +109,11 @@ public class WeixinServiceImpl implements WeixinService {
         try {
             int cnt = 0;
             long time = System.currentTimeMillis();
-            while (cnt++ < 5) {
+            while (cnt++ < 6) {
+                Long passTime = System.currentTimeMillis() - time;
+                if(passTime > CommonConstant.VALID_TIME_SEC * 1000L){
+                    break;
+                }
                 String tLogin = "https://login.wx.qq.com/cgi-bin/mmwebwx-bin/login?loginicon=true&tip=%s&r=2109427913&_=%s&uuid=%s";
                 String login = String.format(tLogin, 1, time, uuid);
                 String s1 = httpClientTemplate.executeGet(login);

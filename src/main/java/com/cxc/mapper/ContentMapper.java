@@ -23,4 +23,6 @@ public interface ContentMapper {
     int deleteById(Integer id);
 
     int update(Content content);
+
+    Content getById(Integer id);
 }
