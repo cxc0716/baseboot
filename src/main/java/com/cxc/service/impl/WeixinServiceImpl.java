@@ -20,6 +20,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
@@ -42,6 +43,7 @@ import com.google.common.collect.Maps;
 /**
  * author:chenxinchao date:2017-06-10 21:07 desc:com.cxc.service.impl
  */
+@Service
 public class WeixinServiceImpl implements WeixinService {
 
     private static final Logger logger = LoggerFactory

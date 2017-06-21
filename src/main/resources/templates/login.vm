@@ -33,9 +33,8 @@
                    value=""/>
         </ul>
         <div align="center">
-            <label id="msg" style="color: red;"></label>
+            <label id="msg" style="color: red;">&nbsp;</label>
         </div>
-
         <input type="button" value="登录" id="submitBtn" class="delu-btn1"
                style="margin-top:20px; font-size: 18px;">
         </input>

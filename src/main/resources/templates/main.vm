@@ -1,1 +1,94 @@
-ssssss
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>xxx-首页</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/shoujisc.css">
+    <script type="text/javascript" src="/js/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+<div class="sjsc-title1" style="height:50px; position:fixed; top:0px;">
+    <h3 class="sjsc-t1l f-l" style="line-height:50px;"><a
+            href="/logout"><span><</span>退出</a></h3>
+    <button class="sjsc-btn1 f-r"
+            style="padding:9px; font-size:16px; margin: 7px 10px 0 0;"><a
+            href="/content/upsert" style="color:#FFFFFF;">发布内容</a></button>
+    <div style="clear:both;"></div>
+</div>
+
+<div style="height:50px;"></div>
+
+<div class="my-dd">
+    <div class="my-info">
+        <div class="my-k1" id="6395">
+            <ul class="my-p1">
+                <li class="my-spl f-l">2017-06-18 16:10:15</li>
+                <li class="my-spr f-r">
+                    群发类型：
+                    好友
+                </li>
+                <div style="clear:both;"></div>
+            </ul>
+            <div style="overflow:hidden">
+                群发内容：</br>
+                【六喜珠宝】尊敬的顾客，因钯金下柜，六喜公司为了处理好钯金售后，近期信息发得较为频繁，为您带来不便敬请谅解。您原来购买的钯金已经下柜，钯金旧料以高出撤柜价回收，进入倒计时，还没来得及换的顾客朋友们赶紧了，越往后越不值钱了。如有需要请到五通假日广场六喜珠宝。电话：5211999，3167688^_^
+            </div>
+            <div class="my-p2" style="height:50px;">
+                    <span class="my-sp3 f-l"
+                          style="float:right; margin-right:10px;">
+						<a class="zhifu-btn1"
+                           style="width:110%; text-align:center; background:#ed5565; padding-left:5px; padding-right:5px;"
+                           id="del" dataid="6395"> 删除</a>
+					</span>
+
+                <span class="my-sp3 f-l"
+                      style="float:right;  margin-right:20px;">
+						<a href="/index.php/WxMass/edit/id/6395"
+                           class="zhifu-btn1"
+                           style="width:110%; text-align:center; background:#23c6c8; padding-left:5px; padding-right:5px;"> 编辑</a>
+					</span>
+
+                <span class="my-sp3 f-l"
+                      style="float:right; margin-right:25px;">
+						<a href="/index.php/WxMass/qrcode/id/6395"
+                           class="zhifu-btn1"
+                           style="width:110%; text-align:center; padding-left:5px; padding-right:5px;"> 获取二维码</a>
+					</span>
+
+                <div style="clear:both;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="position:fixed; width:100%; bottom:0px; height:30px; text-align:right; background: #F1F1F1; border-top: 1px solid #D3D3D3; line-height:30px;">
+    <center>Copyright XXXXXX © 2017</center>
+</div>
+<script>
+    $('[id=del]').click(function () {
+        id = $(this).attr('dataid');
+
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: '/index.php/WxMass/del',
+            data: {id: id},
+            success: function (obj) {
+                if (obj.meta.code == 200) {
+                    alert('删除成功！');
+                    $('#' + id + '').remove();
+                } else {
+                    alert('删除失败！');
+                }
+            },
+            error: function (data) {
+                alert('网络错误');
+            }
+        });
+    })
+</script>
+</body>
+</html>

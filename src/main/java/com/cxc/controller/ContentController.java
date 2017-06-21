@@ -106,6 +106,17 @@ public class ContentController extends BaseController {
         }
     }
 
+    @RequestMapping("/content/edit")
+    public String toEdit(Integer id, HttpServletRequest request) {
+        if (id != null) {
+            Content content = contentService.getById(id);
+            if (content != null) {
+                request.setAttribute("data", content);
+            }
+        }
+        return "edit";
+    }
+
     private String getExt(String fileName) {
         int i = fileName.lastIndexOf(".");
         return fileName.substring(i + 1, fileName.length());
