@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>熊猫拓客-二维码</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/shoujisc.css">
+    <script type="text/javascript" src="/js/jquery-3.2.1.min.js"></script>
+    <style>
+        .qrCode{
+            width:100%;
+            height:auto;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 450px) {
+            .qrCode{
+                width:60%;
+                height:auto;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="sjsc-title1" style="height:50px;">
+    <h3 class="sjsc-t1l f-l" style="line-height:50px;"><a href="/index.php/WxMass/view"><span><</span>返回</a></h3>
+    <button class="sjsc-btn1 f-r" style="padding:9px; font-size:16px; margin: 7px 10px 0 0;"><a style="color:#FFFFFF;" id="nextBut">刷新二维码</a></button>
+    <div style="clear:both;"></div>
+</div>
+
+<div class="my-dd" id="nextBut">
+    <div class="my-info">
+        <center><h1>微信扫二维码开始发送</h1></center>
+        <center style="display:none;" id="prompt"><h1 style="color:red;">二维码有效期还剩 <span id="second">120</span> 秒</h1></center>
+
+        </br>
+        <div id="qrcode" style="text-align:center;">
+            <span style="color:red; font-size:16px;">请求数据中...</span>
+        </div>
+    </div>
+</div>
+
+<div style="position:fixed; width:100%; bottom:0px; height:30px; text-align:right; background: #F1F1F1; border-top: 1px solid #D3D3D3; line-height:30px;">
+    <center>Copyright 熊猫拓客提供技术支持 © 2017</center>
+</div>
+<script>
+    var id = '6395';
+    var second = 120;
+    var timer = null;
+
+    getQrcodeOperation();
+
+    function getQrcodeOperation(){
+        $('#qrcode').html('');
+        $('#qrcode').html('<span style="color:red; font-size:16px;">请求数据中...</span>');
+
+        getQrcode(id);
+    }
+
+    // 刷新二维码
+    $('[id=nextBut]').click(function(){
+        refreshQrcode();
+    })
+
+    function refreshQrcode(){
+        second = 120;
+        $('#second').html('120');
+        $('#prompt').hide();
+        clearInterval(timer);
+
+        $('#qrcode').html('');
+        $('#qrcode').html('<span style="color:red; font-size:16px;">请求数据中...</span>');
+
+        getQrcode(id)
+    }
+
+    // 请求二维码数据
+    function getQrcode(id){
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: '/index.php/WxMass/requestQrCode',
+            data: {id: id},
+            success: function (obj) {
+                if(obj.meta.code == 200){
+                    settime();
+                    $('#qrcode').html('');
+                    $('#qrcode').html('<div style="text-align:center;"><img class="qrCode" src='+obj.body.qrcode+'></div>');
+                }else{
+                    $('#qrcode').html('');
+                    $('#qrcode').html('<span style="color:red; font-size:16px;">'+obj.meta.message+'</span>');
+                }
+            },
+            error: function(data) {
+                alert('网络错误', '连接服务器失败，请重试!');
+            }
+        });
+    }
+
+    // 倒计时刷新二维码
+    function settime(val) {
+        $('#prompt').show();
+        timer = setInterval(function(){
+            second -= 1;
+            if(second > 0 ){
+                $('#second').html(second);
+            }else{
+                refreshQrcode();
+                clearInterval(timer);
+            }
+        },1000);
+    }
+
+    /* window.onload = function checkLogin(){
+     setInterval(function(){
+     $.ajax({
+     type: "POST",
+     dataType: "json",
+     url: '/index.php/WxMass/checkUserLogin',
+     success: function (obj) {
+     if(obj.meta.code != 200){
+     alert('账号已在其他客户端登陆！');
+     window.location.href = 'http://'+window.location.host+'/company.php/Index/mobileLogout';
+     }
+     },
+     error: function(data) {
+     console.log('网络错误');
+     }
+     });
+     },5000);
+     } */
+
+    </head>
+<body>
+
+</body>
+</html>
