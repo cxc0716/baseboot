@@ -10,10 +10,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -95,7 +97,10 @@ public class ContentController extends BaseController {
                 file1.mkdirs();
             }
             file.transferTo(new File(filePath + path));
-            return initSuccessResult(path);
+            Map<String,String> map = Maps.newHashMap();
+            map.put("picUrl",path);
+            map.put("imgUrl",urlPrefix+path);
+            return initSuccessResult(map);
         } catch (IOException e) {
             return initFailureResult(e.getMessage());
         }

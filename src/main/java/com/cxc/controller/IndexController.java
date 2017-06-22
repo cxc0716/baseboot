@@ -48,34 +48,39 @@ public class IndexController extends BaseController {
                 bindingResult.getFieldError().getDefaultMessage());
         }
         user.setPassword(PasswordEncoder.encodeMd5Password(user.getPassword()));
-        HiUser hiUser = userService.queryByUsernameAndPassword(user);
-        if (hiUser == null) {
-            return initFailureResult("用户名或密码不正确");
-        } else {
-            Integer deleted = hiUser.getDeleted();
-            if (deleted != null && deleted.intValue() == 1) {
-                return initFailureResult("用户已被删除");
-            }
-            Integer accountLocked = hiUser.getAccountLocked();
-            if (accountLocked != null && accountLocked.intValue() == 1) {
-                return initFailureResult("帐号被锁定，请联系管理员");
-            }
-            Integer accountEnabled = hiUser.getAccountEnabled();
-            if (accountEnabled != null && accountEnabled.intValue() == 0) {
-                return initFailureResult("帐号不可用，请联系管理员");
-            }
-            Date expiredDate = hiUser.getExpiredDate();
-            Date date = new Date();
-            if (expiredDate != null && date.compareTo(expiredDate) > 0) {
-                return initFailureResult("帐号已过期，请联系管理员");
-            }
-            UserSimpleInfo userSimpleInfo = new UserSimpleInfo();
-            userSimpleInfo.setId(hiUser.getId());
-            userSimpleInfo.setUserName(hiUser.getUserName());
-            userSimpleInfo.setNote(hiUser.getDescription());
-            HttpSession session = request.getSession();
-            session.setAttribute("user", userSimpleInfo);
-            return initSuccessResult();
+        try {
+            HiUser hiUser = userService.queryByUsernameAndPassword(user);
+            if (hiUser == null) {
+				return initFailureResult("用户名或密码不正确");
+			} else {
+				Integer deleted = hiUser.getDeleted();
+				if (deleted != null && deleted.intValue() == 1) {
+					return initFailureResult("用户已被删除");
+				}
+				Integer accountLocked = hiUser.getAccountLocked();
+				if (accountLocked != null && accountLocked.intValue() == 1) {
+					return initFailureResult("帐号被锁定，请联系管理员");
+				}
+				Integer accountEnabled = hiUser.getAccountEnabled();
+				if (accountEnabled != null && accountEnabled.intValue() == 0) {
+					return initFailureResult("帐号不可用，请联系管理员");
+				}
+				Date expiredDate = hiUser.getExpiredDate();
+				Date date = new Date();
+				if (expiredDate != null && date.compareTo(expiredDate) > 0) {
+					return initFailureResult("帐号已过期，请联系管理员");
+				}
+				UserSimpleInfo userSimpleInfo = new UserSimpleInfo();
+				userSimpleInfo.setId(hiUser.getId());
+				userSimpleInfo.setUserName(hiUser.getUserName());
+				userSimpleInfo.setNote(hiUser.getDescription());
+				HttpSession session = request.getSession();
+				session.setAttribute("user", userSimpleInfo);
+				return initSuccessResult();
+			}
+        } catch (Exception e) {
+            logger.error("[doLogin] query error" ,e);
+            return initFailureResult("登录失败");
         }
     }
 

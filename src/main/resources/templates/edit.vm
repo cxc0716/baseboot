@@ -9,6 +9,8 @@
     <link rel="stylesheet" type="text/css" href="/css/shoujisc.css">
     <link href="/css/layer.css" rel="stylesheet">
     <script type="text/javascript" src="/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/js/ajaxfileupload.js"></script>
+
     <style>
         .file {
             position: relative;
@@ -113,14 +115,15 @@
             style="display:none;"
         #end>
         <p>预览</p>
-        <div id="img"
-             style="background:URL($!picUrl) no-repeat; background-size:contain;"></div>
+        <div id="img">
+            <img src="$!picUrl" id="img" border="0" width="50" height="50">
+        </div>
         <div style="clear:both;"></div>
     </li>
     <li>
         <input type="hidden" value="$!data.id" name="id" id="dataId">
         <p>内容1200字</p>
-        <textarea name="mass_content" maxlength="1200" id="mass_content"
+        <textarea name="text" maxlength="1200" id="mass_content"
                   style="width:76%; height:250px; padding-left:10px; border:1px solid #eee; background:#F7F7F7;">$!data.text
 </textarea>
         <div style="clear:both;"></div>
@@ -192,14 +195,14 @@
     #parse("footer.vm")
 <script>
     $("#save").click(function () {
-        mass_content = $('#mass_content').val();
-        dataId = $('#dataId').val();
-        send_type = $('#type input:radio:checked').val();
-        img_url = $('#img_url').val();
-        gender = $('#gender input:radio:checked').val();
-        zombieCheck = $('#zombieCheck input:radio:checked').val();
+        id = $('input[name=id]').val();
+        text = $('input[name=text]').val();
+        sendType = $('input[name=sendType] input:radio:checked').val();
+        picUrl = $('input[name=picUrl]').val();
+        sex = $('input[name=sex] input:radio:checked').val();
+        friendFlag = $('input[name=friendFlag] input:radio:checked').val();
 
-        if (mass_content == '' && img_url == '') {
+        if (text == '' && picUrl == '') {
             alert('请输入内容！');
             return;
         }
@@ -207,72 +210,60 @@
         $.ajax({
             type: "POST",
             dataType: "json",
-            url: '/index.php/WxMass/edit',
+            url: '/content/upsert',
             data: {
-                mass_content: mass_content,
-                send_type: send_type,
-                id: dataId,
-                img_url: img_url,
-                gender: gender,
-                zombie_check: zombieCheck
+                id: id,
+                picUrl: picUrl,
+                text: text,
+                sendType: sendType,
+                sex: sex,
+                friendFlag: friendFlag
             },
             beforeSend: function (XMLHttpRequest) {
-                layer.load();
             },
             success: function (obj) {
-                layer.closeAll();
-                if (obj.meta.code == 200) {
+                if (obj.code == 200) {
                     alert(obj.data);
-                    window.location.href = '/index.php/WxMass/view';
+                    window.location.href = '/content/list';
                 } else {
-                    alert(obj.meta.message);
+                    alert(obj.errorCode);
                 }
-            },
-            error: function (data) {
-                layer.closeAll();
-                alert('网络错误');
             }
         });
     })
 
 
-    function run(input_file, get_data) {
-        /*input_file：文件按钮对象*/
-        /*get_data: 转换成功后执行的方法*/
-        if (typeof(FileReader) === 'undefined') {
-            alert("抱歉，你的浏览器不支持 FileReader，不能将图片转换为Base64，请使用现代浏览器操作！");
-        } else {
-            try {
-                $("#imgDisplay").show();
-                /*图片转Base64 核心代码*/
-                var file = input_file.files[0];
-                //这里我们判断下类型如果不是图片就返回 去掉就可以上传任意文件
-                if (!/image\/\w+/.test(file.type)) {
-                    alert("请确保文件为图像类型");
-                    return false;
-                }
-                var reader = new FileReader();
-                reader.onload = function () {
-                    get_data(this.result);
-                }
-                reader.readAsDataURL(file);
-            } catch (e) {
-                // alert('图片转Base64出错啦！'+ e.toString())
-                alert('请重新选择图片！')
-            }
-        }
-    }
-
     $(function () {
-        $("#choice").change(function () {
-            run(this, function (data) {
-                $('#img_url').val(data);
-                $('#img').css({
-                    background: 'URL(' + data + ') no-repeat',
-                    'background-size': 'contain',
-                });
+//        $("#upload").on('click', function() {
+//            $('#fileToUpload').click();
+//        });
+
+        //选择文件之后执行上传
+        $('#choice').on('change', function() {
+            $.ajaxFileUpload({
+                url:'/content/upload',
+                secureuri:false,
+                fileElementId:'choice',//file标签的id
+                dataType: 'json',//返回数据的类型
+                data:{},//一同上传的数据
+                success: function (data, status) {
+                    //把图片替换
+                    if(data.code == 200){
+                        $("#img").attr("src", data.data.imgUrl);
+                        $("input[name=picUrl]").val(data.data.picUrl);
+                    }else{
+                        alert(data.errorCode);
+                    }
+
+                },
+                error: function (data, status, e) {
+                    alert(e);
+                }
             });
         });
+
+    });
+
     });
 </script>
 
