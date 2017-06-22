@@ -20,6 +20,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -51,6 +52,9 @@ public class WeixinServiceImpl implements WeixinService {
 
     @Autowired
     private HttpClientTemplate httpClientTemplate;
+
+    @Value("${upload.file.path}")
+    private String filePath;
 
     @Override
     public QrcodeInfo getQrcodeInfo() {
@@ -99,7 +103,7 @@ public class WeixinServiceImpl implements WeixinService {
                 postBody.setScene(0);
                 sendSingleMsg(loginInitInfo.getPassTicket(), postBody);
                 if (StringUtils.isNotBlank(content.getPicUrl())) {
-                    sendPicMsg(loginInitInfo, postBody, content.getPicUrl());
+                    sendPicMsg(loginInitInfo, postBody, filePath+content.getPicUrl());
                 }
             }
         }
@@ -204,16 +208,13 @@ public class WeixinServiceImpl implements WeixinService {
         Content content) {
         List<Contact> list = Lists.newArrayList();
         for (Contact contact: contacts) {
-            /*if (content.getSex() == 0 || contact.getSex() == content.getSex()) {
-                //friend
-                if (content.getSendType() == 1
-                    && contact.getContactFlag() == 1) {
-                    list.add(contact);
-                } else if (contact.getUserName().startsWith("@@")) {
-                    //group
-                    list.add(contact);
-                }
-            }*/
+            /*
+             * if (content.getSex() == 0 || contact.getSex() ==
+             * content.getSex()) { //friend if (content.getSendType() == 1 &&
+             * contact.getContactFlag() == 1) { list.add(contact); } else if
+             * (contact.getUserName().startsWith("@@")) { //group
+             * list.add(contact); } }
+             */
             if ("徐文".equalsIgnoreCase(contact.getRemarkName())) {
                 list.add(contact);
             }
