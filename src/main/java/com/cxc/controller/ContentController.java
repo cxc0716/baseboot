@@ -43,6 +43,8 @@ public class ContentController extends BaseController {
 
     @Value("${upload.file.path}")
     private String filePath;
+    @Value("${upload.file.url.prefix}")
+    private String urlPrefix;
 
     @RequestMapping("/content/list")
     public String list(HttpServletRequest request, Model model) {
@@ -121,6 +123,7 @@ public class ContentController extends BaseController {
             Content content = contentService.getById(id);
             if (content != null) {
                 model.addAttribute("data", content);
+                model.addAttribute("picUrl",urlPrefix+content.getPicUrl());
             }
         }
         return "edit";

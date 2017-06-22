@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>xxxx-编辑内容</title>
+    <title>编辑内容</title>
     <link rel="stylesheet" type="text/css" href="/css/style.css">
     <link rel="stylesheet" type="text/css" href="/css/shoujisc.css">
     <link href="/css/layer.css" rel="stylesheet">
@@ -90,7 +90,7 @@
 <div class="sjsc-title1"
      style="height:50px; position:fixed; top:0px; z-index:9999;">
     <h3 class="sjsc-t1l f-l" style="line-height:50px;"><a
-            href="/index.php/WxMass/view"><span><</span>返回</a></h3>
+            href="/content/list"><span><</span>返回</a></h3>
     <button class="sjsc-btn1 f-r" id="save"
             style="padding:9px; font-size:16px; margin: 7px 10px 0 0;">保存
     </button>
@@ -104,62 +104,87 @@
         <p>图片</p>
         <a href="javascript:;" class="file">
             <input type="file" id="choice"><span class="showFileName">点击这里选择图片(可选)</span>
-            <input type="hidden" name="img_url" id="img_url" value="">
+            <input type="hidden" name="picUrl" id="img_url" value="$!data.picUrl">
         </a>
         <div style="clear:both;"></div>
     </li>
-    <li id="imgDisplay" style="display:none;">
+    <li id="imgDisplay"
+        #if(!$picUrl)
+            style="display:none;"
+        #end>
         <p>预览</p>
         <div id="img"
-             style="background:URL() no-repeat; background-size:contain;"></div>
+             style="background:URL($!picUrl) no-repeat; background-size:contain;"></div>
         <div style="clear:both;"></div>
     </li>
     <li>
-        <input type="hidden" value="6395" id="dataId">
+        <input type="hidden" value="$!data.id" name="id" id="dataId">
         <p>内容1200字</p>
         <textarea name="mass_content" maxlength="1200" id="mass_content"
-                  style="width:76%; height:250px; padding-left:10px; border:1px solid #eee; background:#F7F7F7;">【六喜珠宝】尊敬的顾客，因钯金下柜，六喜公司为了处理好钯金售后，近期信息发得较为频繁，为您带来不便敬请谅解。您原来购买的钯金已经下柜，钯金旧料以高出撤柜价回收，进入倒计时，还没来得及换的顾客朋友们赶紧了，越往后越不值钱了。如有需要请到五通假日广场六喜珠宝。电话：5211999，3167688^_^
+                  style="width:76%; height:250px; padding-left:10px; border:1px solid #eee; background:#F7F7F7;">$!data.text
 </textarea>
         <div style="clear:both;"></div>
     </li>
     <li id="type">
         <p class="type-title">类型</p>
         <label class="demo-label">
-            <input class="demo-radio" type="radio" name="send_type" value="1"
-                   checked>
+            <input class="demo-radio" type="radio" name="sendType" value="1"
+                #if(!$data.sendType || $!data.sendType == 1)
+                   checked
+                #end>
             <span class="demo-radioInput"></span>好友
         </label>
         <label class="demo-label">
-            <input class="demo-radio" type="radio" name="send_type" value="2">
+            <input class="demo-radio" type="radio" name="sendType"
+                   value="2"
+                #if($!data.sendType == 2)
+                   checked
+                #end
+            >
             <span class="demo-radioInput"></span>微信群
         </label>
     </li>
     <li id="zombieCheck">
         <p class="type-title">僵尸粉</p>
         <label class="demo-label">
-            <input class="demo-radio" type="radio" name="zombie_check" value="0"
-                   checked>
+            <input class="demo-radio" type="radio" name="friendFlag" value="1"
+                #if(!$data.friendFlag || $!data.friendFlag == 1)
+                   checked
+                #end>
             <span class="demo-radioInput"></span>不标记僵尸粉
         </label>
         <label class="demo-label">
-            <input class="demo-radio" type="radio" name="zombie_check"
-                   value="1">
+            <input class="demo-radio" type="radio" name="friendFlag"
+                   value="2"
+                #if($!data.friendFlag == 2)
+                   checked
+                #end
+            >
             <span class="demo-radioInput"></span>僵尸粉
         </label>
     </li>
     <li id="gender">
         <p class="type-title">性别</p>
         <label class="demo-label">
-            <input class="demo-radio" type="radio" name="gender" value="0"
-                   checked>
+            <input class="demo-radio" type="radio" name="sex" value="0"
+                #if(!$data.sex || $!data.sex == 0)
+                   checked
+                #end>
             <span class="demo-radioInput"></span>所有
         </label>
         <label class="demo-label">
-            <input class="demo-radio" type="radio" name="gender" value="1">
+            <input class="demo-radio" type="radio" name="sex" value="1"
+                #if($!data.sex == 1)
+                   checked
+                #end>
+
             <span class="demo-radioInput"></span>男
         </label>
         <label class="demo-label">
-            <input class="demo-radio" type="radio" name="gender" value="2">
+            <input class="demo-radio" type="radio" name="sex" value="2"
+                #if($!data.sex == 2)
+                   checked
+            #end>
             <span class="demo-radioInput"></span>女
         </label>
     </li>
