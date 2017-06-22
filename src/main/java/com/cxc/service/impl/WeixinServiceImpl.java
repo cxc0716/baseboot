@@ -98,8 +98,8 @@ public class WeixinServiceImpl implements WeixinService {
                 postBody.setMsg(msgInfo);
                 postBody.setScene(0);
                 sendSingleMsg(loginInitInfo.getPassTicket(), postBody);
-                if(StringUtils.isNotBlank(content.getPicUrl())){
-                    sendPicMsg(loginInitInfo,postBody,content.getPicUrl());
+                if (StringUtils.isNotBlank(content.getPicUrl())) {
+                    sendPicMsg(loginInitInfo, postBody, content.getPicUrl());
                 }
             }
         }
@@ -113,7 +113,7 @@ public class WeixinServiceImpl implements WeixinService {
             long time = System.currentTimeMillis();
             while (cnt++ < 6) {
                 Long passTime = System.currentTimeMillis() - time;
-                if(passTime > CommonConstant.VALID_TIME_SEC * 1000L){
+                if (passTime > CommonConstant.VALID_TIME_SEC * 1000L) {
                     break;
                 }
                 String tLogin = "https://login.wx.qq.com/cgi-bin/mmwebwx-bin/login?loginicon=true&tip=%s&r=2109427913&_=%s&uuid=%s";
@@ -204,8 +204,15 @@ public class WeixinServiceImpl implements WeixinService {
         Content content) {
         List<Contact> list = Lists.newArrayList();
         for (Contact contact: contacts) {
-            if ("徐文".equalsIgnoreCase(contact.getRemarkName())) {
-                list.add(contact);
+            if (content.getSex() == 0 || contact.getSex() == content.getSex()) {
+                //friend
+                if (content.getSendType() == 1
+                    && contact.getContactFlag() == 1) {
+                    list.add(contact);
+                } else if (contact.getUserName().startsWith("@@")) {
+                    //group
+                    list.add(contact);
+                }
             }
         }
         return list;
@@ -223,19 +230,24 @@ public class WeixinServiceImpl implements WeixinService {
             return false;
         }
     }
-    private boolean sendPicMsg(TokenInfo tokenInfo, PostBody body,String filePath){
+
+    private boolean sendPicMsg(TokenInfo tokenInfo, PostBody body,
+        String filePath) {
         try {
-            String mediaId = uploadFile(tokenInfo,body.getMsg().getFromUserName(),body.getMsg().getToUserName(),new File(filePath));
-            if(StringUtils.isNotBlank(mediaId)){
+            String mediaId = uploadFile(tokenInfo,
+                body.getMsg().getFromUserName(), body.getMsg().getToUserName(),
+                new File(filePath));
+            if (StringUtils.isNotBlank(mediaId)) {
                 body.getMsg().setMediaId(mediaId);
-                return sendMedia(tokenInfo.getPassTicket(),body);
+                return sendMedia(tokenInfo.getPassTicket(), body);
             }
             return false;
         } catch (Exception e) {
-            logger.error("[op:sendPicMsg]:",e);
+            logger.error("[op:sendPicMsg]:", e);
             return false;
         }
     }
+
     /**
      * @param tokenInfo
      * @param file

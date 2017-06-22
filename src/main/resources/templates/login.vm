@@ -29,8 +29,6 @@
             <li class="delu-li2"><input style="width:100%;" type="password"
                                         id="password" name="password"
                                         placeholder="请输入您的密码" value=""/></li>
-            <input style=" width:100%;" type="hidden" name="company_id"
-                   value=""/>
         </ul>
         <div align="center">
             <label id="msg" style="color: red;">&nbsp;</label>
