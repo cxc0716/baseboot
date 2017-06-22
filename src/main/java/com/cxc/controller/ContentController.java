@@ -88,7 +88,11 @@ public class ContentController extends BaseController {
                 "yyyyMMddHHmmss");
             String path = getUserId(request) + datetime
                 + getExt(file.getOriginalFilename());
-            file.transferTo(new File(filePath + "/" + path));
+            File file1 = new File(filePath);
+            if (!file1.exists()) {
+                file1.mkdirs();
+            }
+            file.transferTo(new File(filePath + path));
             return initSuccessResult(path);
         } catch (IOException e) {
             return initFailureResult(e.getMessage());
