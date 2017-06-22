@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>xxxx-编辑内容</title>
     <link rel="stylesheet" type="text/css" href="/css/style.css">
     <link rel="stylesheet" type="text/css" href="/css/shoujisc.css">
@@ -24,8 +25,8 @@
         }
 
         .file input {
-            position:absolute;
-            font-size:100px;
+            position: absolute;
+            font-size: 100px;
             right: 0;
             top: 0;
             opacity: 0;
@@ -38,27 +39,61 @@
             text-decoration: none;
         }
 
-        #img{
-            width:150px;
-            height:100px;
-            margin-left:17%;
+        #img {
+            width: 150px;
+            height: 100px;
+            margin-left: 17%;
         }
 
-        .demo-label{margin:8px 20px 0 0;display:inline-block}
-        .demo-radio{display:none}
-        .demo-radioInput{background-color:#fff;border:1px solid rgba(0,0,0,0.15);border-radius:100%;display:inline-block;height:26px;margin-right:10px;margin-top:-1px;vertical-align:middle;width:26px;line-height:1}
-        .demo-radio:checked + .demo-radioInput:after{background-color:RGB(18,183,241);border-radius:100%;content:"";display:inline-block;height:22px;margin:2px;width:22px}
-        .demo-checkbox.demo-radioInput,.demo-radio:checked + .demo-checkbox.demo-radioInput:after{border-radius:0}
+        .demo-label {
+            margin: 8px 20px 0 0;
+            display: inline-block
+        }
 
-        .type-title{
-            margin-top:4px;
+        .demo-radio {
+            display: none
+        }
+
+        .demo-radioInput {
+            background-color: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 100%;
+            display: inline-block;
+            height: 26px;
+            margin-right: 10px;
+            margin-top: -1px;
+            vertical-align: middle;
+            width: 26px;
+            line-height: 1
+        }
+
+        .demo-radio:checked + .demo-radioInput:after {
+            background-color: RGB(18, 183, 241);
+            border-radius: 100%;
+            content: "";
+            display: inline-block;
+            height: 22px;
+            margin: 2px;
+            width: 22px
+        }
+
+        .demo-checkbox.demo-radioInput, .demo-radio:checked + .demo-checkbox.demo-radioInput:after {
+            border-radius: 0
+        }
+
+        .type-title {
+            margin-top: 4px;
         }
     </style>
 </head>
 <body>
-<div class="sjsc-title1" style="height:50px; position:fixed; top:0px; z-index:9999;">
-    <h3 class="sjsc-t1l f-l" style="line-height:50px;"><a href="/index.php/WxMass/view"><span><</span>返回</a></h3>
-    <button class="sjsc-btn1 f-r" id="save" style="padding:9px; font-size:16px; margin: 7px 10px 0 0;">保存</button>
+<div class="sjsc-title1"
+     style="height:50px; position:fixed; top:0px; z-index:9999;">
+    <h3 class="sjsc-t1l f-l" style="line-height:50px;"><a
+            href="/index.php/WxMass/view"><span><</span>返回</a></h3>
+    <button class="sjsc-btn1 f-r" id="save"
+            style="padding:9px; font-size:16px; margin: 7px 10px 0 0;">保存
+    </button>
     <div style="clear:both;"></div>
 </div>
 
@@ -75,59 +110,63 @@
     </li>
     <li id="imgDisplay" style="display:none;">
         <p>预览</p>
-        <div id="img" style="background:URL() no-repeat; background-size:contain;"></div>
+        <div id="img"
+             style="background:URL() no-repeat; background-size:contain;"></div>
         <div style="clear:both;"></div>
-    </li>    	<li>
-    <input type="hidden" value="6395" id="dataId">
-    <p>内容1200字</p>
-    <textarea name="mass_content" maxlength="1200" id="mass_content" style="width:76%; height:250px; padding-left:10px; border:1px solid #eee; background:#F7F7F7;">【六喜珠宝】尊敬的顾客，因钯金下柜，六喜公司为了处理好钯金售后，近期信息发得较为频繁，为您带来不便敬请谅解。您原来购买的钯金已经下柜，钯金旧料以高出撤柜价回收，进入倒计时，还没来得及换的顾客朋友们赶紧了，越往后越不值钱了。如有需要请到五通假日广场六喜珠宝。电话：5211999，3167688^_^
+    </li>
+    <li>
+        <input type="hidden" value="6395" id="dataId">
+        <p>内容1200字</p>
+        <textarea name="mass_content" maxlength="1200" id="mass_content"
+                  style="width:76%; height:250px; padding-left:10px; border:1px solid #eee; background:#F7F7F7;">【六喜珠宝】尊敬的顾客，因钯金下柜，六喜公司为了处理好钯金售后，近期信息发得较为频繁，为您带来不便敬请谅解。您原来购买的钯金已经下柜，钯金旧料以高出撤柜价回收，进入倒计时，还没来得及换的顾客朋友们赶紧了，越往后越不值钱了。如有需要请到五通假日广场六喜珠宝。电话：5211999，3167688^_^
 </textarea>
-    <div style="clear:both;"></div>
-</li>
+        <div style="clear:both;"></div>
+    </li>
     <li id="type">
         <p class="type-title">类型</p>
         <label class="demo-label">
-            <input class="demo-radio" type="radio" name="send_type" value="1" checked>
+            <input class="demo-radio" type="radio" name="send_type" value="1"
+                   checked>
             <span class="demo-radioInput"></span>好友
         </label>
         <label class="demo-label">
-            <input class="demo-radio" type="radio" name="send_type" value="2" >
+            <input class="demo-radio" type="radio" name="send_type" value="2">
             <span class="demo-radioInput"></span>微信群
         </label>
     </li>
     <li id="zombieCheck">
         <p class="type-title">僵尸粉</p>
         <label class="demo-label">
-            <input class="demo-radio" type="radio" name="zombie_check" value="0" checked>
+            <input class="demo-radio" type="radio" name="zombie_check" value="0"
+                   checked>
             <span class="demo-radioInput"></span>不标记僵尸粉
         </label>
         <label class="demo-label">
-            <input class="demo-radio" type="radio" name="zombie_check" value="1" >
+            <input class="demo-radio" type="radio" name="zombie_check"
+                   value="1">
             <span class="demo-radioInput"></span>僵尸粉
         </label>
     </li>
     <li id="gender">
         <p class="type-title">性别</p>
         <label class="demo-label">
-            <input class="demo-radio" type="radio" name="gender" value="0" checked>
+            <input class="demo-radio" type="radio" name="gender" value="0"
+                   checked>
             <span class="demo-radioInput"></span>所有
         </label>
         <label class="demo-label">
-            <input class="demo-radio" type="radio" name="gender" value="1" >
+            <input class="demo-radio" type="radio" name="gender" value="1">
             <span class="demo-radioInput"></span>男
         </label>
         <label class="demo-label">
-            <input class="demo-radio" type="radio" name="gender" value="2" >
+            <input class="demo-radio" type="radio" name="gender" value="2">
             <span class="demo-radioInput"></span>女
         </label>
     </li>
 </ul>
-
-<div style="position:fixed; width:100%; bottom:0px; height:30px; text-align:right; background: #F1F1F1; border-top: 1px solid #D3D3D3; line-height:30px;">
-    <center>Copyright xxxxx © 2017</center>
-</div>
+    #parse("footer.vm")
 <script>
-    $("#save").click(function(){
+    $("#save").click(function () {
         mass_content = $('#mass_content').val();
         dataId = $('#dataId').val();
         send_type = $('#type input:radio:checked').val();
@@ -135,7 +174,7 @@
         gender = $('#gender input:radio:checked').val();
         zombieCheck = $('#zombieCheck input:radio:checked').val();
 
-        if(mass_content == '' && img_url == ''){
+        if (mass_content == '' && img_url == '') {
             alert('请输入内容！');
             return;
         }
@@ -144,20 +183,27 @@
             type: "POST",
             dataType: "json",
             url: '/index.php/WxMass/edit',
-            data: {mass_content: mass_content, send_type: send_type, id: dataId, img_url: img_url, gender: gender, zombie_check: zombieCheck},
-            beforeSend:function(XMLHttpRequest){
+            data: {
+                mass_content: mass_content,
+                send_type: send_type,
+                id: dataId,
+                img_url: img_url,
+                gender: gender,
+                zombie_check: zombieCheck
+            },
+            beforeSend: function (XMLHttpRequest) {
                 layer.load();
             },
             success: function (obj) {
                 layer.closeAll();
-                if(obj.meta.code == 200){
+                if (obj.meta.code == 200) {
                     alert(obj.data);
                     window.location.href = '/index.php/WxMass/view';
-                }else{
+                } else {
                     alert(obj.meta.message);
                 }
             },
-            error: function(data) {
+            error: function (data) {
                 layer.closeAll();
                 alert('网络错误');
             }
@@ -165,27 +211,27 @@
     })
 
 
-    function run(input_file,get_data){
+    function run(input_file, get_data) {
         /*input_file：文件按钮对象*/
         /*get_data: 转换成功后执行的方法*/
-        if ( typeof(FileReader) === 'undefined' ){
+        if (typeof(FileReader) === 'undefined') {
             alert("抱歉，你的浏览器不支持 FileReader，不能将图片转换为Base64，请使用现代浏览器操作！");
         } else {
-            try{
+            try {
                 $("#imgDisplay").show();
                 /*图片转Base64 核心代码*/
                 var file = input_file.files[0];
                 //这里我们判断下类型如果不是图片就返回 去掉就可以上传任意文件
-                if(!/image\/\w+/.test(file.type)){
+                if (!/image\/\w+/.test(file.type)) {
                     alert("请确保文件为图像类型");
                     return false;
                 }
                 var reader = new FileReader();
-                reader.onload = function(){
+                reader.onload = function () {
                     get_data(this.result);
                 }
                 reader.readAsDataURL(file);
-            }catch (e){
+            } catch (e) {
                 // alert('图片转Base64出错啦！'+ e.toString())
                 alert('请重新选择图片！')
             }
@@ -196,13 +242,14 @@
         $("#choice").change(function () {
             run(this, function (data) {
                 $('#img_url').val(data);
-                $('#img').css({background: 'URL('+data+') no-repeat', 'background-size': 'contain', });
+                $('#img').css({
+                    background: 'URL(' + data + ') no-repeat',
+                    'background-size': 'contain',
+                });
             });
         });
     });
+</script>
 
-    </head>
-    <body>
-
-    </body>
-    </html>
+</body>
+</html>

@@ -71,9 +71,7 @@
     </div>
 </div>
 
-<div style="position:fixed; width:100%; bottom:0px; height:30px; text-align:right; background: #F1F1F1; border-top: 1px solid #D3D3D3; line-height:30px;">
-    <center>Copyright XXXXXX © 2017</center>
-</div>
+    #parse("footer.vm")
 <script>
     $('#del').click(function () {
         id = $(this).attr('dataid');

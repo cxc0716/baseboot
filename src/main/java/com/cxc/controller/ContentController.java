@@ -45,13 +45,13 @@ public class ContentController extends BaseController {
     private String filePath;
 
     @RequestMapping("/content/list")
-    public String list(HttpServletRequest request,Model model) {
+    public String list(HttpServletRequest request, Model model) {
         try {
             List<Content> contents = contentService
                 .queryListByUid(getUserId(request));
             model.addAttribute("list", contents);
         } catch (Exception e) {
-            logger.error("[content:list]",e);
+            logger.error("[content:list]", e);
             model.addAttribute("list", Lists.newArrayList());
         }
         return "main";
@@ -105,13 +105,14 @@ public class ContentController extends BaseController {
             contentService.deleteById(id);
             return initSuccessResult("删除成功");
         } catch (Exception e) {
-            logger.error("[content:delete]",e);
+            logger.error("[content:delete]", e);
             return initFailureResult(e.getMessage());
         }
     }
 
     @RequestMapping("/content/edit")
-    public String toEdit(Integer id, HttpServletRequest request,Model model) {
+    public String toEdit(@RequestParam(required = false) Integer id,
+        HttpServletRequest request, Model model) {
         if (id != null) {
             Content content = contentService.getById(id);
             if (content != null) {
@@ -122,7 +123,8 @@ public class ContentController extends BaseController {
     }
 
     @RequestMapping("/content/qrcode")
-    public String toQrcodePage(Integer id, HttpServletRequest request,Model model) {
+    public String toQrcodePage(Integer id, HttpServletRequest request,
+        Model model) {
         model.addAttribute("id", id);
         return "qrcode";
     }

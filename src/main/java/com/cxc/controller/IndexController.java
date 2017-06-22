@@ -30,8 +30,13 @@ public class IndexController extends BaseController {
     @RequestMapping("/index")
     public String index(HttpServletRequest request,
         HttpServletResponse response) {
-        System.out.println("index");
         return "main";
+    }
+
+    @RequestMapping("/")
+    public String defaultPage(HttpServletRequest request,
+        HttpServletResponse response) {
+        return "forward:/login";
     }
 
     @RequestMapping("/doLogin")

@@ -5,4 +5,5 @@
 
 this is <font color="red">ERROR</font> page
 </body>
+    #parse("footer.vm")
 </html>

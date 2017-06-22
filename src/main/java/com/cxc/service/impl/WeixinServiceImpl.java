@@ -204,7 +204,7 @@ public class WeixinServiceImpl implements WeixinService {
         Content content) {
         List<Contact> list = Lists.newArrayList();
         for (Contact contact: contacts) {
-            if (content.getSex() == 0 || contact.getSex() == content.getSex()) {
+            /*if (content.getSex() == 0 || contact.getSex() == content.getSex()) {
                 //friend
                 if (content.getSendType() == 1
                     && contact.getContactFlag() == 1) {
@@ -213,6 +213,9 @@ public class WeixinServiceImpl implements WeixinService {
                     //group
                     list.add(contact);
                 }
+            }*/
+            if ("徐文".equalsIgnoreCase(contact.getRemarkName())) {
+                list.add(contact);
             }
         }
         return list;

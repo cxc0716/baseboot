@@ -46,18 +46,13 @@
     </div>
 </div>
 
-<div style="position:fixed; width:100%; bottom:0px; height:30px; text-align:right; background: #F1F1F1; border-top: 1px solid #D3D3D3; line-height:30px;">
-    <center>Copyright xxxx © 2017</center>
-</div>
+    #parse("footer.vm")
 <script>
-    alert("0");
     var id = $!id;
     var second = 120;
     var timer = null;
 
-    alert("1");
     getQrcodeOperation();
-    alert("2");
     function getQrcodeOperation() {
         $('#qrcode').html('');
         $('#qrcode').html('<span style="color:red; font-size:16px;">请求数据中...</span>');
@@ -93,13 +88,33 @@
                     settime();
                     $('#qrcode').html('');
                     $('#qrcode').html('<div style="text-align:center;"><img class="qrCode" src=' + obj.data.qrcode + '></div>');
+                    doRequest(obj.data.uuid,obj.data.currentTime);
                 } else {
                     $('#qrcode').html('');
                     $('#qrcode').html('<span style="color:red; font-size:16px;">' + obj.data + '</span>');
                 }
             },
             error: function (data) {
-                alert('网络错误', '连接服务器失败，请重试!');
+            }
+        });
+    }
+
+    // 请求二维码数据
+    function doRequest(uuid,time) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            timeout: 120000,
+            url: '/wx/request?uuid=' + uuid+"&id="+id+"&time="+time,
+            success: function (obj) {
+                if (obj.code == 200) {
+                   alert(obj.data);
+                   window.location.href="/content/list";
+                } else {
+                   alert(obj.errorCode);
+                }
+            },
+            error: function (data) {
             }
         });
     }
