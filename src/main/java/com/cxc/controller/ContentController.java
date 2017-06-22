@@ -18,11 +18,13 @@ import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.cxc.domain.Content;
 import com.cxc.service.ContentService;
@@ -43,13 +45,14 @@ public class ContentController extends BaseController {
     private String filePath;
 
     @RequestMapping("/content/list")
-    public String list(HttpServletRequest request) {
+    public String list(HttpServletRequest request,Model model) {
         try {
             List<Content> contents = contentService
                 .queryListByUid(getUserId(request));
-            request.setAttribute("list", contents);
+            model.addAttribute("list", contents);
         } catch (Exception e) {
-            request.setAttribute("list", Lists.newArrayList());
+            logger.error("[content:list]",e);
+            model.addAttribute("list", Lists.newArrayList());
         }
         return "main";
     }
@@ -102,19 +105,26 @@ public class ContentController extends BaseController {
             contentService.deleteById(id);
             return initSuccessResult("删除成功");
         } catch (Exception e) {
+            logger.error("[content:delete]",e);
             return initFailureResult(e.getMessage());
         }
     }
 
     @RequestMapping("/content/edit")
-    public String toEdit(Integer id, HttpServletRequest request) {
+    public String toEdit(Integer id, HttpServletRequest request,Model model) {
         if (id != null) {
             Content content = contentService.getById(id);
             if (content != null) {
-                request.setAttribute("data", content);
+                model.addAttribute("data", content);
             }
         }
         return "edit";
+    }
+
+    @RequestMapping("/content/qrcode")
+    public String toQrcodePage(Integer id, HttpServletRequest request,Model model) {
+        model.addAttribute("id", id);
+        return "qrcode";
     }
 
     private String getExt(String fileName) {

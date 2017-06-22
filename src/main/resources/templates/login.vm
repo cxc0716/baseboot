@@ -57,7 +57,7 @@
                 data: data,
                 success: function (obj) {
                     if (obj.code == 200) {
-                        window.location.href = '/index';
+                        window.location.href = '/content/list';
                     } else {
                         $("#msg").text(obj.errorMsg);
                     }

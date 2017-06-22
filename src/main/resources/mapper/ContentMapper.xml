@@ -21,7 +21,7 @@
       VALUES (1,#{text},#{picUrl},#{sendType},#{friendFlag},#{sex},now(),0,#{creator})
     </insert>
 
-    <select id="queryByUserId" parameterType="Integer" resultMap="ContentMap">
+    <select id="queryListByUid" parameterType="Integer" resultMap="ContentMap">
         select * from content where creator = #{uid} and deleted = 0
         ORDER BY createTime desc limit 100;
     </select>
@@ -31,7 +31,7 @@
     </select>
 
     <update id="deleteById" parameterType="Integer">
-        update content set deleted=1,verison=version+1 where id=#{id  }
+        update content set deleted=1,version=version+1 where id=#{id}
     </update>
 
     <update id="update" parameterType="Content">
