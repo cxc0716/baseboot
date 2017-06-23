@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,6 +46,7 @@ public class ContentController extends BaseController {
 
     @Value("${upload.file.path}")
     private String filePath;
+
     @Value("${upload.file.url.prefix}")
     private String urlPrefix;
 
@@ -63,13 +65,14 @@ public class ContentController extends BaseController {
 
     @RequestMapping("/content/upsert")
     @ResponseBody
-    public AjaxResult upsert(@Valid Content content,
+    public AjaxResult upsert(@Valid Content content, HttpServletRequest request,
         BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return initFailureResult(
                 bindingResult.getFieldError().getDefaultMessage());
         }
         try {
+            content.setCreator(getUserId(request));
             if (content.getId() == null) {
                 contentService.save(content);
                 return initSuccessResult("保存成功");
@@ -85,7 +88,7 @@ public class ContentController extends BaseController {
     @RequestMapping("/content/upload")
     @ResponseBody
     public AjaxResult uploadPic(
-        @RequestParam(value = "file", required = false) MultipartFile file,
+        @RequestParam(required = true) MultipartFile file,
         HttpServletRequest request) {
         try {
             String datetime = DateFormatUtils.format(new Date(),
@@ -97,9 +100,9 @@ public class ContentController extends BaseController {
                 file1.mkdirs();
             }
             file.transferTo(new File(filePath + path));
-            Map<String,String> map = Maps.newHashMap();
-            map.put("picUrl",path);
-            map.put("imgUrl",urlPrefix+path);
+            Map<String, String> map = Maps.newHashMap();
+            map.put("picUrl", path);
+            map.put("imgUrl", urlPrefix + path);
             return initSuccessResult(map);
         } catch (IOException e) {
             return initFailureResult(e.getMessage());
@@ -128,7 +131,7 @@ public class ContentController extends BaseController {
             Content content = contentService.getById(id);
             if (content != null) {
                 model.addAttribute("data", content);
-                model.addAttribute("picUrl",urlPrefix+content.getPicUrl());
+                model.addAttribute("picUrl", urlPrefix + content.getPicUrl());
             }
         }
         return "edit";
@@ -143,6 +146,6 @@ public class ContentController extends BaseController {
 
     private String getExt(String fileName) {
         int i = fileName.lastIndexOf(".");
-        return fileName.substring(i + 1, fileName.length());
+        return fileName.substring(i, fileName.length());
     }
 }

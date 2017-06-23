@@ -14,9 +14,7 @@ import org.hibernate.validator.constraints.Range;
 public class Content implements Serializable {
 	private Integer id;
 	private  Integer version;
-	@NotBlank(message = "text不能为空")
 	private String text;
-	@NotBlank(message = "picUrl不能为空")
 	private String picUrl;
 	@Range(min = 0,max = 2,message = "sendType为1或2")
 	private Integer sendType;

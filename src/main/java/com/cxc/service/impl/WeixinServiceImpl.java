@@ -101,9 +101,12 @@ public class WeixinServiceImpl implements WeixinService {
                 msgInfo.setContent(content.getText());
                 postBody.setMsg(msgInfo);
                 postBody.setScene(0);
-                sendSingleMsg(loginInitInfo.getPassTicket(), postBody);
+                if (StringUtils.isNotBlank(postBody.getMsg().getContent())) {
+                    sendSingleMsg(loginInitInfo.getPassTicket(), postBody);
+                }
                 if (StringUtils.isNotBlank(content.getPicUrl())) {
-                    sendPicMsg(loginInitInfo, postBody, filePath+content.getPicUrl());
+                    sendPicMsg(loginInitInfo, postBody,
+                        filePath + content.getPicUrl());
                 }
             }
         }

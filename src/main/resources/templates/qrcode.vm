@@ -115,6 +115,7 @@
                 }
             },
             error: function (data) {
+                alert("请求超时");
             }
         });
     }

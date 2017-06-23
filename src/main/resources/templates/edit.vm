@@ -93,9 +93,9 @@
      style="height:50px; position:fixed; top:0px; z-index:9999;">
     <h3 class="sjsc-t1l f-l" style="line-height:50px;"><a
             href="/content/list"><span><</span>返回</a></h3>
-    <button class="sjsc-btn1 f-r" id="save"
-            style="padding:9px; font-size:16px; margin: 7px 10px 0 0;">保存
-    </button>
+    <input type="button" class="sjsc-btn1 f-r" id="save"
+            style="padding:9px; font-size:16px; margin: 7px 10px 0 0;" value="保存">
+    </input>
     <div style="clear:both;"></div>
 </div>
 
@@ -105,17 +105,19 @@
     <li>
         <p>图片</p>
         <a href="javascript:;" class="file">
-            <input type="file" id="choice"><span class="showFileName">点击这里选择图片(可选)</span>
-            <input type="hidden" name="picUrl" id="img_url" value="$!data.picUrl">
+            <input type="file" id="choice" name="file" onchange="upload();"><span
+                class="showFileName">点击这里选择图片(可选)</span>
+            <input type="hidden" name="picUrl" id="img_url"
+                   value="$!data.picUrl">
         </a>
         <div style="clear:both;"></div>
     </li>
     <li id="imgDisplay"
-        #if(!$picUrl)
-            style="display:none;"
+        #if(!$picUrl && $!picUrl != "")
+        style="display:none;"
         #end>
         <p>预览</p>
-        <div id="img">
+        <div>
             <img src="$!picUrl" id="img" border="0" width="50" height="50">
         </div>
         <div style="clear:both;"></div>
@@ -187,7 +189,7 @@
             <input class="demo-radio" type="radio" name="sex" value="2"
                 #if($!data.sex == 2)
                    checked
-            #end>
+                #end>
             <span class="demo-radioInput"></span>女
         </label>
     </li>
@@ -196,11 +198,11 @@
 <script>
     $("#save").click(function () {
         id = $('input[name=id]').val();
-        text = $('input[name=text]').val();
-        sendType = $('input[name=sendType] input:radio:checked').val();
+        text = $('textarea[name=text]').val();
         picUrl = $('input[name=picUrl]').val();
-        sex = $('input[name=sex] input:radio:checked').val();
-        friendFlag = $('input[name=friendFlag] input:radio:checked').val();
+        sendType = $("input[name='sendType']:checked").val();
+        sex = $("input[name='sex']:checked").val();
+        friendFlag = $("input[name='friendFlag']:checked").val();
 
         if (text == '' && picUrl == '') {
             alert('请输入内容！');
@@ -222,49 +224,41 @@
             beforeSend: function (XMLHttpRequest) {
             },
             success: function (obj) {
+                console.log(obj.code);
+                console.log(obj.errorCode);
                 if (obj.code == 200) {
-                    alert(obj.data);
                     window.location.href = '/content/list';
                 } else {
-                    alert(obj.errorCode);
+                    alert("保存失败");
                 }
             }
         });
     })
 
-
-    $(function () {
-//        $("#upload").on('click', function() {
-//            $('#fileToUpload').click();
-//        });
-
-        //选择文件之后执行上传
-        $('#choice').on('change', function() {
-            $.ajaxFileUpload({
-                url:'/content/upload',
-                secureuri:false,
-                fileElementId:'choice',//file标签的id
-                dataType: 'json',//返回数据的类型
-                data:{},//一同上传的数据
-                success: function (data, status) {
-                    //把图片替换
-                    if(data.code == 200){
-                        $("#img").attr("src", data.data.imgUrl);
-                        $("input[name=picUrl]").val(data.data.picUrl);
-                    }else{
-                        alert(data.errorCode);
-                    }
-
-                },
-                error: function (data, status, e) {
-                    alert(e);
+    function upload() {
+        var fd = new FormData();
+        fd.append( "file", $("input[name=file]").file);
+        $.ajaxFileUpload({
+            url: '/content/upload',
+            secureuri: false,
+            fileElementId: 'choice',//file标签的id
+            dataType: 'json',//返回数据的类型
+            data: fd,//一同上传的数据
+            success: function (data, status) {
+                //把图片替换
+                if (data.code == 200) {
+                    $("#img").attr("src", data.data.imgUrl);
+                    $("input[name=picUrl]").val(data.data.picUrl);
+                } else {
+                    alert(data.errorCode);
                 }
-            });
+
+            },
+            error: function (data, status, e) {
+                alert(e);
+            }
         });
-
-    });
-
-    });
+    }
 </script>
 
 </body>
