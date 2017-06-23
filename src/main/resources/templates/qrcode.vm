@@ -111,7 +111,7 @@
                    alert(obj.data);
                    window.location.href="/content/list";
                 } else {
-                   alert(obj.errorCode);
+                   alert(obj.errorMsg);
                 }
             },
             error: function (data) {

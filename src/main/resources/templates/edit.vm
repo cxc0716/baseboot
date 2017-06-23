@@ -225,11 +225,11 @@
             },
             success: function (obj) {
                 console.log(obj.code);
-                console.log(obj.errorCode);
+                console.log(obj.errorMsg);
                 if (obj.code == 200) {
                     window.location.href = '/content/list';
                 } else {
-                    alert("保存失败");
+                    alert(obj.errorMsg);
                 }
             }
         });
@@ -250,7 +250,7 @@
                     $("#img").attr("src", data.data.imgUrl);
                     $("input[name=picUrl]").val(data.data.picUrl);
                 } else {
-                    alert(data.errorCode);
+                    alert(data.errorMsg);
                 }
 
             },
