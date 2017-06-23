@@ -58,6 +58,8 @@ public class HiUser implements Serializable {
 
     protected Integer deleted = Integer.valueOf(0);
 
+    private Integer creator;
+
     public Integer getId() {
         return id;
     }
@@ -240,5 +242,13 @@ public class HiUser implements Serializable {
 
     public void setDeleted(Integer deleted) {
         this.deleted = deleted;
+    }
+
+    public Integer getCreator() {
+        return creator;
+    }
+
+    public void setCreator(Integer creator) {
+        this.creator = creator;
     }
 }
