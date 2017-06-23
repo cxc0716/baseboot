@@ -91,10 +91,14 @@ public class ContentController extends BaseController {
         @RequestParam(required = true) MultipartFile file,
         HttpServletRequest request) {
         try {
+            String allowExt = ".JPEG/.TIFF/.RAW/.BMP/.GIF/.PNG";
+            String ext = getExt(file.getOriginalFilename());
+            if(!allowExt.contains(ext.toUpperCase())){
+                return initFailureResult("图片格式不正确");
+            }
             String datetime = DateFormatUtils.format(new Date(),
                 "yyyyMMddHHmmss");
-            String path = getUserId(request) + datetime
-                + getExt(file.getOriginalFilename());
+            String path = getUserId(request) + datetime + ext;
             File file1 = new File(filePath);
             if (!file1.exists()) {
                 file1.mkdirs();
