@@ -41,23 +41,4 @@ public class UserServiceImpl implements UserService {
     public HiUser queryByUsernameAndPassword(HiUser user) {
         return userMapper.queryByUsernameAndPassword(user);
     }
-
-    public static void main(String[] args) {
-       HttpClientTemplate httpClientTemplate = new HttpClientTemplate();
-        httpClientTemplate.init();
-
-        WeixinServiceImpl weixinService = new WeixinServiceImpl();
-        weixinService.setHttpClientTemplate(httpClientTemplate);
-        QrcodeInfo qrcodeInfo = weixinService.getQrcodeInfo();
-        System.out.println("qrcode--->" + qrcodeInfo.getQrcode());
-        Content content = new Content();
-        content.setText("hello~~");
-        try {
-            Boolean aBoolean = weixinService.sendMsg(qrcodeInfo.getUuid(),
-                content);
-            System.out.println("result-->" + aBoolean);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

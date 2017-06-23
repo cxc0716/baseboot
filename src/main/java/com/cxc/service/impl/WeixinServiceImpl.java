@@ -101,12 +101,12 @@ public class WeixinServiceImpl implements WeixinService {
                 msgInfo.setContent(content.getText());
                 postBody.setMsg(msgInfo);
                 postBody.setScene(0);
-                if (StringUtils.isNotBlank(postBody.getMsg().getContent())) {
-                    sendSingleMsg(loginInitInfo.getPassTicket(), postBody);
-                }
                 if (StringUtils.isNotBlank(content.getPicUrl())) {
                     sendPicMsg(loginInitInfo, postBody,
                         filePath + content.getPicUrl());
+                }
+                if (StringUtils.isNotBlank(postBody.getMsg().getContent())) {
+                    sendSingleMsg(loginInitInfo.getPassTicket(), postBody);
                 }
             }
         }
@@ -211,16 +211,20 @@ public class WeixinServiceImpl implements WeixinService {
         Content content) {
         List<Contact> list = Lists.newArrayList();
         for (Contact contact: contacts) {
-            /*
-             * if (content.getSex() == 0 || contact.getSex() ==
-             * content.getSex()) { //friend if (content.getSendType() == 1 &&
-             * contact.getContactFlag() == 1) { list.add(contact); } else if
-             * (contact.getUserName().startsWith("@@")) { //group
-             * list.add(contact); } }
-             */
-            if ("徐文".equalsIgnoreCase(contact.getRemarkName())) {
-                list.add(contact);
+
+            if (content.getSex() == 0 || contact.getSex() == content.getSex()) { //friend 
+                if (content.getSendType() == 1
+                    && contact.getContactFlag() == 1) {
+                    list.add(contact);
+                } else if (contact.getUserName().startsWith("@@")) { //group
+                    list.add(contact);
+                }
             }
+
+            /*
+             * if ("徐文".equalsIgnoreCase(contact.getRemarkName())) {
+             * list.add(contact); }
+             */
         }
         return list;
     }
