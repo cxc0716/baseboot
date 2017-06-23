@@ -26,7 +26,7 @@
 
             <div class="my-k1" id="$!item.id">
                 <ul class="my-p1">
-                    <li class="my-spl f-l">$!date.format('yyyy-MM-dd HH:mm:ss',$!item.createTime)</li>
+                    <li class="my-spl f-l">$!item.timeStr</li>
                     <li class="my-spr f-r">
                         群发类型：
                         #if($item.sendType == 1)

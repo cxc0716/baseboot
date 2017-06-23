@@ -55,6 +55,11 @@ public class ContentController extends BaseController {
         try {
             List<Content> contents = contentService
                 .queryListByUid(getUserId(request));
+            for (Content content: contents) {
+                String format = DateFormatUtils.format(
+                    content.getCreateTime().getTime(), "yyyy-MM-dd HH:mm:ss");
+                content.setTimeStr(format);
+            }
             model.addAttribute("list", contents);
         } catch (Exception e) {
             logger.error("[content:list]", e);
@@ -93,7 +98,7 @@ public class ContentController extends BaseController {
         try {
             String allowExt = ".JPEG/.TIFF/.RAW/.BMP/.GIF/.PNG";
             String ext = getExt(file.getOriginalFilename());
-            if(!allowExt.contains(ext.toUpperCase())){
+            if (!allowExt.contains(ext.toUpperCase())) {
                 return initFailureResult("图片格式不正确");
             }
             String datetime = DateFormatUtils.format(new Date(),

@@ -26,6 +26,8 @@ public class Content implements Serializable {
 	private Integer deleted;
 	private Integer creator;
 
+	private String timeStr;
+
 	public Integer getId() {
 		return id;
 	}
@@ -104,5 +106,13 @@ public class Content implements Serializable {
 
 	public void setCreator(Integer creator) {
 		this.creator = creator;
+	}
+
+	public String getTimeStr() {
+		return timeStr;
+	}
+
+	public void setTimeStr(String timeStr) {
+		this.timeStr = timeStr;
 	}
 }
