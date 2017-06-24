@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.cxc.common.exception.WeixinServiceException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.http.NameValuePair;
@@ -84,7 +85,7 @@ public class WeixinServiceImpl implements WeixinService {
     public Boolean sendMsg(String uuid, Content content) throws Exception {
         String ticket = waitAndGetTicket(uuid);
         if (StringUtils.isBlank(ticket)) {
-            throw new Exception("扫描超时，请刷新二维码重新扫描");
+            throw new WeixinServiceException("扫描超时，请刷新二维码重新扫描");
         }
         TokenInfo loginInitInfo = getLoginInitInfo(uuid, ticket);
 
@@ -107,6 +108,10 @@ public class WeixinServiceImpl implements WeixinService {
                 }
                 if (StringUtils.isNotBlank(postBody.getMsg().getContent())) {
                     sendSingleMsg(loginInitInfo.getPassTicket(), postBody);
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
                 }
             }
         }
@@ -238,6 +243,7 @@ public class WeixinServiceImpl implements WeixinService {
             logger.info("sendmsg result:{}", s6);
             return true;
         } catch (IOException e) {
+            logger.error("[sendMsg]",e);
             return false;
         }
     }

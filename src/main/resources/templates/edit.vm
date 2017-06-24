@@ -110,6 +110,7 @@
             <input type="hidden" name="picUrl" id="img_url"
                    value="$!data.picUrl">
         </a>
+        <span class="uploadTips"  style="color: red;display: none">正在上传……</span>
         <div style="clear:both;"></div>
     </li>
     <li id="imgDisplay"
@@ -236,6 +237,8 @@
     })
 
     function upload() {
+        $(".uploadTips").html("正在上传……");
+        $(".uploadTips").show();
         var fd = new FormData();
         fd.append( "file", $("input[name=file]").file);
         $.ajaxFileUpload({
@@ -249,8 +252,9 @@
                 if (data.code == 200) {
                     $("#img").attr("src", data.data.imgUrl);
                     $("input[name=picUrl]").val(data.data.picUrl);
+                    $("#imgDisplay").hide();
                 } else {
-                    alert(data.errorMsg);
+                    $(".uploadTips").html(data.errorMsg);
                 }
 
             },

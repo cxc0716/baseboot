@@ -98,7 +98,7 @@ public class ContentController extends BaseController {
         try {
             String allowExt = ".JPEG/.TIFF/.RAW/.BMP/.GIF/.PNG";
             String ext = getExt(file.getOriginalFilename());
-            if (!allowExt.contains(ext.toUpperCase())) {
+            if (allowExt.indexOf(ext.toUpperCase()) == -1) {
                 return initFailureResult("图片格式不正确");
             }
             String datetime = DateFormatUtils.format(new Date(),
