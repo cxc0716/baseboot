@@ -157,8 +157,8 @@ public class WeixinServiceImpl implements WeixinService {
 
     private TokenInfo getLoginInitInfo(String uuid, String ticket)
         throws IOException {
-        String loginPage = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=%s&uuid=%s&lang=zh_CN&scan=1496898816&fun=new&version=v2&lang=zh_CN";
-        String loginPage2 = String.format(loginPage, ticket, uuid);
+        String loginPage = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=%s&uuid=%s&lang=zh_CN&scan=%s&fun=new&version=v2&lang=zh_CN";
+        String loginPage2 = String.format(loginPage, ticket, uuid,System.currentTimeMillis());
         Map<String, String> result = httpClientTemplate
             .getBodyAndCookieByPost(loginPage2, null);
         String s3 = result.get("body");
