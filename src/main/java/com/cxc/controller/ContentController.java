@@ -155,6 +155,9 @@ public class ContentController extends BaseController {
 
     private String getExt(String fileName) {
         int i = fileName.lastIndexOf(".");
+        if(i == -1){
+            return "";
+        }
         return fileName.substring(i, fileName.length());
     }
 }
