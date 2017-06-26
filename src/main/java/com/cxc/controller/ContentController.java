@@ -15,26 +15,23 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.google.common.collect.Maps;
 import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.cxc.domain.Content;
 import com.cxc.service.ContentService;
-import com.cxc.service.WeixinService;
 import com.cxc.vo.AjaxResult;
-import com.cxc.vo.UserSimpleInfo;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * @author 陈新超(hzchenxinchao@corp.netease.com)
@@ -94,7 +91,8 @@ public class ContentController extends BaseController {
     @ResponseBody
     public AjaxResult uploadPic(
         @RequestParam(required = true) MultipartFile file,
-        HttpServletRequest request) {
+        HttpServletRequest request) throws
+        FileUploadBase.SizeLimitExceededException {
         try {
             String allowExt = ".JPEG/.JPG/.TIFF/.RAW/.BMP/.GIF/.PNG";
             String ext = getExt(file.getOriginalFilename());

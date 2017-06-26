@@ -8,6 +8,7 @@ package com.cxc.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -193,5 +194,12 @@ public class BaseController {
     public AjaxResult exceptionHandler(Exception e) {
         logger.error("api exception:", e);
         return new AjaxResult(ResponseCode.FAIL, e.getMessage());
+    }
+
+    @ExceptionHandler()
+    @ResponseBody
+    public AjaxResult exceptionUploadHandler(FileUploadBase.SizeLimitExceededException e) {
+        logger.error("upload exception:", e);
+        return new AjaxResult(ResponseCode.FAIL, "上传文件过大");
     }
 }
