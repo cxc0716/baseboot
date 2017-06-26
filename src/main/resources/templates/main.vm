@@ -46,7 +46,7 @@
                           style="float:right; margin-right:10px;">
 						<a class="zhifu-btn1"
                            style="width:110%; text-align:center; background:#ed5565; padding-left:5px; padding-right:5px;"
-                           id="del" dataid="$item.id"> 删除</a>
+                           class="del" dataid="$item.id"> 删除</a>
 					</span>
 
                     <span class="my-sp3 f-l"
@@ -72,7 +72,7 @@
 
     #parse("footer.vm")
 <script>
-    $('#del').click(function () {
+    $('.del').click(function () {
         id = $(this).attr('dataid');
         if (confirm("确定要删除吗？")) {
             del(id);
