@@ -619,13 +619,6 @@ public class HttpClientTemplate {
             throw new IOException("status code: " + statusCode);
         }
         Header[] allHeaders = httpResponse.getAllHeaders();
-        System.out.println("print header begin ");
-        for (Header allHeader: allHeaders) {
-            System.out.println(allHeader.getName() + "###"
-                + allHeader.getValue() + "###" + allHeader.getElements());
-            System.out.println(">>>>>>");
-        }
-        System.out.println("print header end");
         return httpResponse.getEntity();
     }
 
