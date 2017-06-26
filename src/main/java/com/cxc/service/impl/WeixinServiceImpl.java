@@ -85,7 +85,7 @@ public class WeixinServiceImpl implements WeixinService {
     @Override
     public Boolean sendMsg(String uuid, Content content) throws Exception {
         Map<String, String> result = waitAndGetTicket(uuid);
-        logger.info("scan ok :{}",result);
+        logger.info("scan ok :{}", result);
         String ticket = result.get("ticket");
         if (StringUtils.isBlank(ticket)) {
             throw new WeixinServiceException("扫描超时，请刷新二维码重新扫描");
@@ -94,6 +94,7 @@ public class WeixinServiceImpl implements WeixinService {
         String userName = getInitInfo(loginInitInfo);
         List<Contact> contactList = getContactList(loginInitInfo);
         List<Contact> contacts = filterContact(contactList, content);
+        long start = System.currentTimeMillis();
         if (!CollectionUtils.isEmpty(contacts)) {
             for (Contact contact: contacts) {
                 PostBody postBody = new PostBody();
@@ -108,14 +109,17 @@ public class WeixinServiceImpl implements WeixinService {
                     sendPicMsg(loginInitInfo, postBody,
                         filePath + content.getPicUrl());
                 }
-                if (StringUtils.isNotBlank(postBody.getMsg().getContent())) {
+                if (StringUtils.isNotBlank(content.getText())) {
                     sendSingleMsg(loginInitInfo.getPassTicket(), postBody);
                 }
                 try {
-                    Thread.sleep(1600);
+                    Thread.sleep(1500);
                 } catch (InterruptedException e) {}
             }
         }
+        logger.info(
+            "[result] successfully send total {} messages,total cost {} milliSec",
+            contacts.size(), System.currentTimeMillis() - start);
         return true;
     }
 
@@ -232,8 +236,7 @@ public class WeixinServiceImpl implements WeixinService {
         Content content) {
         List<Contact> list = Lists.newArrayList();
         for (Contact contact: contacts) {
-
-            if (content.getSex() == 0 || contact.getSex() == content.getSex()) { //friend 
+            if (content.getSex() == 0 || contact.getSex() == content.getSex()) { //friend
                 if (content.getSendType() == 1 && contact.getContactFlag() == 1
                     && !specialList.contains(contact.getUserName())) {
                     list.add(contact);
@@ -242,10 +245,10 @@ public class WeixinServiceImpl implements WeixinService {
                 }
             }
 
-            /*
-             * if ("徐文".equalsIgnoreCase(contact.getRemarkName())) {
-             * list.add(contact); }
-             */
+//            if ("徐文".equalsIgnoreCase(contact.getRemarkName())) {
+//                list.add(contact);
+//            }
+
         }
         return list;
     }
@@ -376,17 +379,19 @@ public class WeixinServiceImpl implements WeixinService {
         this.httpClientTemplate = httpClientTemplate;
     }
 
-    public static void main(String[] args) {
+ /*   public static void main(String[] args) {
         HttpClientTemplate httpClientTemplate = new HttpClientTemplate();
         httpClientTemplate.init();
         WeixinServiceImpl weixinService = new WeixinServiceImpl();
         weixinService.setHttpClientTemplate(httpClientTemplate);
         QrcodeInfo qrcodeInfo = weixinService.getQrcodeInfo();
-        System.out.println("qrcode--->"+qrcodeInfo.getQrcode());
+        System.out.println("qrcode--->" + qrcodeInfo.getQrcode());
         try {
-            weixinService.sendMsg(qrcodeInfo.getUuid(),new Content());
+            Content content = new Content();
+            content.setText("hello test");
+            weixinService.sendMsg(qrcodeInfo.getUuid(), content);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }
