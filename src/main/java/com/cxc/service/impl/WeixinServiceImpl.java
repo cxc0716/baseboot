@@ -112,7 +112,7 @@ public class WeixinServiceImpl implements WeixinService {
                     sendSingleMsg(loginInitInfo.getPassTicket(), postBody);
                 }
                 try {
-                    Thread.sleep(300);
+                    Thread.sleep(1600);
                 } catch (InterruptedException e) {}
             }
         }
@@ -374,5 +374,19 @@ public class WeixinServiceImpl implements WeixinService {
 
     public void setHttpClientTemplate(HttpClientTemplate httpClientTemplate) {
         this.httpClientTemplate = httpClientTemplate;
+    }
+
+    public static void main(String[] args) {
+        HttpClientTemplate httpClientTemplate = new HttpClientTemplate();
+        httpClientTemplate.init();
+        WeixinServiceImpl weixinService = new WeixinServiceImpl();
+        weixinService.setHttpClientTemplate(httpClientTemplate);
+        QrcodeInfo qrcodeInfo = weixinService.getQrcodeInfo();
+        System.out.println("qrcode--->"+qrcodeInfo.getQrcode());
+        try {
+            weixinService.sendMsg(qrcodeInfo.getUuid(),new Content());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

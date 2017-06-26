@@ -6,28 +6,35 @@
  */
 package com.cxc.common.util;
 
-import com.alibaba.fastjson.JSON;
-import com.google.common.collect.Maps;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.*;
+import javax.annotation.PostConstruct;
+
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.FormBodyPart;
-import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -35,13 +42,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Maps;
 
 /**
  * Http工具类
@@ -72,9 +74,9 @@ public class HttpClientTemplate {
 
     @PostConstruct
     public void init() {
-        connectionManager = new PoolingHttpClientConnectionManager();
-        connectionManager.setMaxTotal(500);
-        connectionManager.setDefaultMaxPerRoute(100);
+//        connectionManager = new PoolingHttpClientConnectionManager();
+//        connectionManager.setMaxTotal(500);
+//        connectionManager.setDefaultMaxPerRoute(100);
         httpClient = HttpClients.custom()
             .setConnectionManager(connectionManager).build();
     }
@@ -509,6 +511,7 @@ public class HttpClientTemplate {
             .setConnectTimeout(timeout).setConnectionRequestTimeout(timeout)
             .setSocketTimeout(timeout).setRedirectsEnabled(false).build();
         postMethod.setConfig(requestConfig);
+        setHeader(postMethod);
         return postMethod;
     }
 
@@ -529,6 +532,7 @@ public class HttpClientTemplate {
             .setConnectTimeout(timeout).setConnectionRequestTimeout(timeout)
             .setSocketTimeout(timeout).setRedirectsEnabled(false).build();
         postMethod.setConfig(requestConfig);
+        setHeader(postMethod);
         return postMethod;
     }
 
@@ -544,6 +548,7 @@ public class HttpClientTemplate {
             .setConnectTimeout(timeout).setConnectionRequestTimeout(timeout)
             .setSocketTimeout(timeout).setRedirectsEnabled(false).build();
         getMethod.setConfig(requestConfig);
+        setHeader(getMethod);
         return getMethod;
     }
 
@@ -563,7 +568,16 @@ public class HttpClientTemplate {
             .setConnectTimeout(timeout).setConnectionRequestTimeout(timeout)
             .setSocketTimeout(timeout).setRedirectsEnabled(false).build();
         getMethod.setConfig(requestConfig);
+        setHeader(getMethod);
         return getMethod;
+    }
+
+    private void setHeader(HttpRequestBase getMethod){
+        getMethod.setHeader("User-Agent",
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36");
+        getMethod.setHeader("Referer","https://wx.qq.com/");
+        getMethod.setHeader("Origin","https://wx.qq.com");
+        getMethod.setHeader("Host","wx.qq.com");
     }
 
     /**
@@ -620,9 +634,8 @@ public class HttpClientTemplate {
             logger.error(
                 "[op: getResponseContentEntity] http request fail, respond={}",
                 JSON.toJSON(statusLine));
-            throw new IOException("status code: " + statusCode);
+//            throw new IOException("status code: " + statusCode);
         }
-        Header[] allHeaders = httpResponse.getAllHeaders();
         return httpResponse.getEntity();
     }
 
@@ -772,7 +785,8 @@ public class HttpClientTemplate {
         String charset = "utf-8";
         HttpPost postRequest = makePostRequest(url, stringEntity, charset,
             timeout);
-        HttpResponse httpResponse = httpClient.execute(postRequest);
+        HttpGet httpGet = makeGetRequest(url, null, charset, timeout);
+        HttpResponse httpResponse = httpClient.execute(httpGet);
         Header[] headers = httpResponse.getHeaders("Set-Cookie");
         if (headers != null) {
             for (Header header: headers) {
