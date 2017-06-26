@@ -25,6 +25,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cxc.domain.Content;
@@ -91,8 +92,7 @@ public class ContentController extends BaseController {
     @ResponseBody
     public AjaxResult uploadPic(
         @RequestParam(required = true) MultipartFile file,
-        HttpServletRequest request) throws
-        FileUploadBase.SizeLimitExceededException {
+        HttpServletRequest request) throws MultipartException{
         try {
             String allowExt = ".JPEG/.JPG/.TIFF/.RAW/.BMP/.GIF/.PNG";
             String ext = getExt(file.getOriginalFilename());

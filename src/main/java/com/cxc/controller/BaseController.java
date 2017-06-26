@@ -8,11 +8,11 @@ package com.cxc.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartException;
 
 import com.cxc.vo.AjaxResult;
 import com.cxc.vo.ResponseCode;
@@ -196,9 +196,9 @@ public class BaseController {
         return new AjaxResult(ResponseCode.FAIL, e.getMessage());
     }
 
-    @ExceptionHandler()
+    @ExceptionHandler(MultipartException.class)
     @ResponseBody
-    public AjaxResult exceptionUploadHandler(FileUploadBase.SizeLimitExceededException e) {
+    public AjaxResult exceptionUploadHandler(MultipartException e) {
         logger.error("upload exception:", e);
         return new AjaxResult(ResponseCode.FAIL, "上传文件过大");
     }

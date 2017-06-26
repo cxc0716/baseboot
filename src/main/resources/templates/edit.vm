@@ -260,7 +260,7 @@
 
             },
             error: function (data, status, e) {
-                $(".uploadTips").html("上传失败，请重试");
+                $(".uploadTips").html("上传失败，请检查文件大小");
             }
         });
     }
