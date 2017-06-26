@@ -27,6 +27,7 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -65,12 +66,15 @@ public class HttpClientTemplate {
 
     private HttpClient httpClient;
 
-    private int timeout = 50000;
+    private int timeout = 37000;
 
     private String defaultCharset = "utf-8";
 
     @PostConstruct
     public void init() {
+        connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setMaxTotal(500);
+        connectionManager.setDefaultMaxPerRoute(100);
         httpClient = HttpClients.custom()
             .setConnectionManager(connectionManager).build();
     }
