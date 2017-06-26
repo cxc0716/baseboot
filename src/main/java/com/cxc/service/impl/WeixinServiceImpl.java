@@ -84,15 +84,17 @@ public class WeixinServiceImpl implements WeixinService {
 
     @Override
     public Boolean sendMsg(String uuid, Content content) throws Exception {
-        Map<String, String> result = waitAndGetTicket(uuid);
+        HttpClientTemplate template = new HttpClientTemplate();
+        template.init();
+        Map<String, String> result = waitAndGetTicket(uuid,template);
         logger.info("scan ok :{}", result);
         String ticket = result.get("ticket");
         if (StringUtils.isBlank(ticket)) {
             throw new WeixinServiceException("扫描超时，请刷新二维码重新扫描");
         }
-        TokenInfo loginInitInfo = getLoginInitInfo(result.get("url"));
-        String userName = getInitInfo(loginInitInfo);
-        List<Contact> contactList = getContactList(loginInitInfo);
+        TokenInfo loginInitInfo = getLoginInitInfo(result.get("url"),template);
+        String userName = getInitInfo(loginInitInfo,template);
+        List<Contact> contactList = getContactList(loginInitInfo,template);
         List<Contact> contacts = filterContact(contactList, content);
         long start = System.currentTimeMillis();
         if (!CollectionUtils.isEmpty(contacts)) {
@@ -107,10 +109,10 @@ public class WeixinServiceImpl implements WeixinService {
                 postBody.setScene(0);
                 if (StringUtils.isNotBlank(content.getPicUrl())) {
                     sendPicMsg(loginInitInfo, postBody,
-                        filePath + content.getPicUrl());
+                        filePath + content.getPicUrl(),template);
                 }
                 if (StringUtils.isNotBlank(content.getText())) {
-                    sendSingleMsg(loginInitInfo.getPassTicket(), postBody);
+                    sendSingleMsg(loginInitInfo.getPassTicket(), postBody,template);
                 }
                 try {
                     Thread.sleep(1500);
@@ -124,6 +126,9 @@ public class WeixinServiceImpl implements WeixinService {
     }
 
     private Map<String, String> waitAndGetTicket(String uuid) {
+       return waitAndGetTicket(uuid,httpClientTemplate);
+    }
+    private Map<String, String> waitAndGetTicket(String uuid,HttpClientTemplate httpClientTemplate) {
         Map<String, String> map = new HashMap<String, String>();
         String ticket = "";
         try {
@@ -163,7 +168,7 @@ public class WeixinServiceImpl implements WeixinService {
         }
     }
 
-    private TokenInfo getLoginInitInfo(String redirectUrl) throws IOException {
+    private TokenInfo getLoginInitInfo(String redirectUrl,HttpClientTemplate httpClientTemplate) throws IOException {
         //        String loginPage = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=%s&uuid=%s&lang=zh_CN&scan=%s&fun=new&version=v2&lang=zh_CN";
         //        String loginPage2 = String.format(loginPage, ticket, uuid,System.currentTimeMillis());
         Map<String, String> result = httpClientTemplate
@@ -191,21 +196,28 @@ public class WeixinServiceImpl implements WeixinService {
         return tokenInfo;
     }
 
-    private String getInitInfo(TokenInfo loginInitInfo) throws IOException {
+    private TokenInfo getLoginInitInfo(String redirectUrl) throws IOException{
+        return getLoginInitInfo(redirectUrl,httpClientTemplate);
+    }
+
+    private String getInitInfo(TokenInfo loginInitInfo,HttpClientTemplate httpClientTemplate) throws IOException {
         String initUrl = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=2059340119&pass_ticket=%s";
         initUrl = String.format(initUrl, loginInitInfo.getPassTicket());
         PostBody postBody = new PostBody();
         postBody.setBaseRequest(loginInitInfo);
         String body = JacksonUtil.write(postBody);
         String s4 = httpClientTemplate.executePost(initUrl, body, "utf-8");
-        System.out.println("s4--->" + s4);
         JSONObject jsonObject = JSON.parseObject(s4);
         String fromUsername = jsonObject.getJSONObject("User").get("UserName")
             .toString();
         return fromUsername;
     }
 
-    private List<Contact> getContactList(TokenInfo loginInitInfo)
+    private String getInitInfo(TokenInfo loginInitInfo) throws IOException{
+        return getInitInfo(loginInitInfo,httpClientTemplate);
+    }
+
+    private List<Contact> getContactList(TokenInfo loginInitInfo,HttpClientTemplate httpClientTemplate)
         throws IOException {
         String contact = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact?pass_ticket=%s&r=%s&seq=0&skey=%s";
         contact = String.format(contact, loginInitInfo.getPassTicket(),
@@ -218,6 +230,11 @@ public class WeixinServiceImpl implements WeixinService {
             return contactResponse.getMemberList();
         }
         return Lists.newArrayList();
+    }
+
+    private List<Contact> getContactList(TokenInfo loginInitInfo)
+        throws IOException {
+        return getContactList(loginInitInfo,httpClientTemplate);
     }
 
     private final String[] specialArray = new String[] { "newsapp", "fmessage",
@@ -253,7 +270,7 @@ public class WeixinServiceImpl implements WeixinService {
         return list;
     }
 
-    private boolean sendSingleMsg(String passTicket, PostBody body) {
+    private boolean sendSingleMsg(String passTicket, PostBody body,HttpClientTemplate httpClientTemplate) {
         try {
             String sendMsg = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsendmsg?lang=zh_CN&pass_ticket=%s";
             sendMsg = String.format(sendMsg, passTicket);
@@ -267,21 +284,29 @@ public class WeixinServiceImpl implements WeixinService {
         }
     }
 
+    private boolean sendSingleMsg(String passTicket, PostBody body) {
+        return sendSingleMsg(passTicket, body, httpClientTemplate);
+    }
+
     private boolean sendPicMsg(TokenInfo tokenInfo, PostBody body,
-        String filePath) {
+        String filePath,HttpClientTemplate httpClientTemplate) {
         try {
             String mediaId = uploadFile(tokenInfo,
                 body.getMsg().getFromUserName(), body.getMsg().getToUserName(),
-                new File(filePath));
+                new File(filePath),httpClientTemplate);
             if (StringUtils.isNotBlank(mediaId)) {
                 body.getMsg().setMediaId(mediaId);
-                return sendMedia(tokenInfo.getPassTicket(), body);
+                return sendMedia(tokenInfo.getPassTicket(), body,httpClientTemplate);
             }
             return false;
         } catch (Exception e) {
             logger.error("[op:sendPicMsg]:", e);
             return false;
         }
+    }
+    private boolean sendPicMsg(TokenInfo tokenInfo, PostBody body,
+        String filePath) {
+        return sendPicMsg(tokenInfo, body, filePath,httpClientTemplate);
     }
 
     /**
@@ -291,7 +316,7 @@ public class WeixinServiceImpl implements WeixinService {
      * @throws IOException
      */
     private String uploadFile(TokenInfo tokenInfo, String from, String to,
-        File file) throws IOException {
+        File file,HttpClientTemplate httpClientTemplate) throws IOException {
         String uploadUrl = "https://file.wx.qq.com/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json";
         List<NameValuePair> parameters = Lists.newArrayList();
         parameters.add(new BasicNameValuePair("id", "WU_FILE_0"));
@@ -324,7 +349,6 @@ public class WeixinServiceImpl implements WeixinService {
             JacksonUtil.write(map)));
         String s = httpClientTemplate.executeFilePost(uploadUrl, parameters,
             file, type);
-        System.out.println("upload>>>>" + s);
         UploadResponse read = JacksonUtil.read(s, UploadResponse.class);
         if (read.getBaseResponse().getRet() == 0) {
             return read.getMediaId();
@@ -332,7 +356,12 @@ public class WeixinServiceImpl implements WeixinService {
         return null;
     }
 
-    private boolean sendMedia(String passTicket, PostBody body)
+    private String uploadFile(TokenInfo tokenInfo, String from, String to,
+        File file) throws IOException {
+        return uploadFile(tokenInfo, from, to, file,httpClientTemplate);
+    }
+
+    private boolean sendMedia(String passTicket, PostBody body,HttpClientTemplate httpClientTemplate)
         throws IOException {
         String url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsendmsgimg?fun=async&f=json&pass_ticket=%s";
         url = String.format(url, passTicket);
@@ -344,6 +373,11 @@ public class WeixinServiceImpl implements WeixinService {
             return true;
         }
         return false;
+    }
+
+    private boolean sendMedia(String passTicket, PostBody body)
+        throws IOException {
+        return sendMedia(passTicket, body,httpClientTemplate);
     }
 
     private String getExtWithoutDot(String fileName) {
