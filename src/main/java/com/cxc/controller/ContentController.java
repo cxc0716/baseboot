@@ -96,7 +96,7 @@ public class ContentController extends BaseController {
         @RequestParam(required = true) MultipartFile file,
         HttpServletRequest request) {
         try {
-            String allowExt = ".JPEG/.TIFF/.RAW/.BMP/.GIF/.PNG";
+            String allowExt = ".JPEG/.JPG/.TIFF/.RAW/.BMP/.GIF/.PNG";
             String ext = getExt(file.getOriginalFilename());
             if (allowExt.indexOf(ext.toUpperCase()) == -1) {
                 return initFailureResult("图片格式不正确");
