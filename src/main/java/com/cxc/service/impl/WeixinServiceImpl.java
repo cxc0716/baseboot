@@ -84,7 +84,7 @@ public class WeixinServiceImpl implements WeixinService {
 
     @Override
     public Boolean sendMsg(String uuid, Content content) throws Exception {
-        Map<String,String> result = waitAndGetTicket(uuid);
+        Map<String, String> result = waitAndGetTicket(uuid);
         String ticket = result.get("ticket");
         if (StringUtils.isBlank(ticket)) {
             throw new WeixinServiceException("扫描超时，请刷新二维码重新扫描");
@@ -112,15 +112,14 @@ public class WeixinServiceImpl implements WeixinService {
                 }
                 try {
                     Thread.sleep(300);
-                } catch (InterruptedException e) {
-                }
+                } catch (InterruptedException e) {}
             }
         }
         return true;
     }
 
-    private Map<String,String> waitAndGetTicket(String uuid) {
-        Map<String,String> map = new HashMap<String, String>();
+    private Map<String, String> waitAndGetTicket(String uuid) {
+        Map<String, String> map = new HashMap<String, String>();
         String ticket = "";
         try {
             int cnt = 0;
@@ -146,8 +145,8 @@ public class WeixinServiceImpl implements WeixinService {
                 ticket = redirectUrl.substring(
                     redirectUrl.indexOf("ticket=") + 7,
                     redirectUrl.indexOf("&uuid"));
-                map.put("url",redirectUrl);
-                map.put("ticket",ticket);
+                map.put("url", redirectUrl);
+                map.put("ticket", ticket);
                 if (StringUtils.isNotBlank(ticket)) {
                     break;
                 }
@@ -159,14 +158,13 @@ public class WeixinServiceImpl implements WeixinService {
         }
     }
 
-    private TokenInfo getLoginInitInfo(String redirectUrl)
-        throws IOException {
-//        String loginPage = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=%s&uuid=%s&lang=zh_CN&scan=%s&fun=new&version=v2&lang=zh_CN";
-//        String loginPage2 = String.format(loginPage, ticket, uuid,System.currentTimeMillis());
+    private TokenInfo getLoginInitInfo(String redirectUrl) throws IOException {
+        //        String loginPage = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=%s&uuid=%s&lang=zh_CN&scan=%s&fun=new&version=v2&lang=zh_CN";
+        //        String loginPage2 = String.format(loginPage, ticket, uuid,System.currentTimeMillis());
         Map<String, String> result = httpClientTemplate
             .getBodyAndCookieByPost(redirectUrl, null);
         String s3 = result.get("body");
-        logger.info("getLoginInitInfo result map:{}",result);
+        logger.info("getLoginInitInfo result map:{}", result);
         //解析skey
         String skey = s3.substring(s3.indexOf("<skey>") + 6,
             s3.indexOf("</skey>"));
@@ -217,14 +215,26 @@ public class WeixinServiceImpl implements WeixinService {
         return Lists.newArrayList();
     }
 
+    private final String[] specialArray = new String[] { "newsapp", "fmessage",
+        "filehelper", "weibo", "qqmail", "fmessage", "tmessage", "qmessage",
+        "qqsync", "floatbottle", "lbsapp", "shakeapp", "medianote", "qqfriend",
+        "readerapp", "blogapp", "facebookapp", "masssendapp", "meishiapp",
+        "feedsapp", "voip", "blogappweixin", "weixin", "brandsessionholder",
+        "weixinreminder", "wxid_novlwrv3lqwv11", "gh_22b87fa7cb3c",
+        "officialaccounts", "notification_messages", "wxid_novlwrv3lqwv11",
+        "gh_22b87fa7cb3c", "wxitil", "userexperience_alarm",
+        "notification_messages" };
+
+    List<String> specialList = Lists.newArrayList(specialArray);
+
     private List<Contact> filterContact(List<Contact> contacts,
         Content content) {
         List<Contact> list = Lists.newArrayList();
         for (Contact contact: contacts) {
 
             if (content.getSex() == 0 || contact.getSex() == content.getSex()) { //friend 
-                if (content.getSendType() == 1
-                    && contact.getContactFlag() == 1) {
+                if (content.getSendType() == 1 && contact.getContactFlag() == 1
+                    && !specialList.contains(contact.getUserName())) {
                     list.add(contact);
                 } else if (contact.getUserName().startsWith("@@")) { //group
                     list.add(contact);
@@ -248,7 +258,7 @@ public class WeixinServiceImpl implements WeixinService {
             logger.info("sendmsg result:{}", s6);
             return true;
         } catch (IOException e) {
-            logger.error("[sendMsg]",e);
+            logger.error("[sendMsg]", e);
             return false;
         }
     }
