@@ -68,7 +68,7 @@ public class HttpClientTemplate {
 
     private HttpClient httpClient;
 
-    private int timeout = 37000;
+    private int timeout = 40000;
 
     private String defaultCharset = "utf-8";
 

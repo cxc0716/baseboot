@@ -129,7 +129,7 @@ public class WeixinServiceImpl implements WeixinService {
         try {
             int cnt = 0;
             long time = System.currentTimeMillis();
-            while (cnt++ < 6) {
+            while (cnt++ < 4) {
                 Long passTime = System.currentTimeMillis() - time;
                 if (passTime > CommonConstant.VALID_TIME_SEC * 1000L) {
                     break;
