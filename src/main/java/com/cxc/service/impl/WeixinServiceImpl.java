@@ -85,6 +85,7 @@ public class WeixinServiceImpl implements WeixinService {
     @Override
     public Boolean sendMsg(String uuid, Content content) throws Exception {
         Map<String, String> result = waitAndGetTicket(uuid);
+        logger.info("scan ok :{}",result);
         String ticket = result.get("ticket");
         if (StringUtils.isBlank(ticket)) {
             throw new WeixinServiceException("扫描超时，请刷新二维码重新扫描");
