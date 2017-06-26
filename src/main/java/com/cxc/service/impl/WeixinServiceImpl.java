@@ -9,6 +9,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -83,12 +84,12 @@ public class WeixinServiceImpl implements WeixinService {
 
     @Override
     public Boolean sendMsg(String uuid, Content content) throws Exception {
-        String ticket = waitAndGetTicket(uuid);
+        Map<String,String> result = waitAndGetTicket(uuid);
+        String ticket = result.get("ticket");
         if (StringUtils.isBlank(ticket)) {
             throw new WeixinServiceException("扫描超时，请刷新二维码重新扫描");
         }
-        TokenInfo loginInitInfo = getLoginInitInfo(uuid, ticket);
-
+        TokenInfo loginInitInfo = getLoginInitInfo(result.get("url"));
         String userName = getInitInfo(loginInitInfo);
         List<Contact> contactList = getContactList(loginInitInfo);
         List<Contact> contacts = filterContact(contactList, content);
@@ -110,7 +111,7 @@ public class WeixinServiceImpl implements WeixinService {
                     sendSingleMsg(loginInitInfo.getPassTicket(), postBody);
                 }
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(300);
                 } catch (InterruptedException e) {
                 }
             }
@@ -118,7 +119,8 @@ public class WeixinServiceImpl implements WeixinService {
         return true;
     }
 
-    private String waitAndGetTicket(String uuid) {
+    private Map<String,String> waitAndGetTicket(String uuid) {
+        Map<String,String> map = new HashMap<String, String>();
         String ticket = "";
         try {
             int cnt = 0;
@@ -144,24 +146,27 @@ public class WeixinServiceImpl implements WeixinService {
                 ticket = redirectUrl.substring(
                     redirectUrl.indexOf("ticket=") + 7,
                     redirectUrl.indexOf("&uuid"));
+                map.put("url",redirectUrl);
+                map.put("ticket",ticket);
                 if (StringUtils.isNotBlank(ticket)) {
                     break;
                 }
             }
-            return ticket;
+            return map;
         } catch (Exception e) {
             logger.error("[op:waitAndGetTicket] error:", e);
-            return null;
+            return map;
         }
     }
 
-    private TokenInfo getLoginInitInfo(String uuid, String ticket)
+    private TokenInfo getLoginInitInfo(String redirectUrl)
         throws IOException {
-        String loginPage = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=%s&uuid=%s&lang=zh_CN&scan=%s&fun=new&version=v2&lang=zh_CN";
-        String loginPage2 = String.format(loginPage, ticket, uuid,System.currentTimeMillis());
+//        String loginPage = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=%s&uuid=%s&lang=zh_CN&scan=%s&fun=new&version=v2&lang=zh_CN";
+//        String loginPage2 = String.format(loginPage, ticket, uuid,System.currentTimeMillis());
         Map<String, String> result = httpClientTemplate
-            .getBodyAndCookieByPost(loginPage2, null);
+            .getBodyAndCookieByPost(redirectUrl, null);
         String s3 = result.get("body");
+        logger.info("getLoginInitInfo result map:{}",result);
         //解析skey
         String skey = s3.substring(s3.indexOf("<skey>") + 6,
             s3.indexOf("</skey>"));
