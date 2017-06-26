@@ -252,14 +252,15 @@
                 if (data.code == 200) {
                     $("#img").attr("src", data.data.imgUrl);
                     $("input[name=picUrl]").val(data.data.picUrl);
-                    $("#imgDisplay").hide();
+                    $(".uploadTips").hide();
+                    $("#imgDisplay").show();
                 } else {
                     $(".uploadTips").html(data.errorMsg);
                 }
 
             },
             error: function (data, status, e) {
-                alert(e);
+                $(".uploadTips").html("上传失败，请重试");
             }
         });
     }
