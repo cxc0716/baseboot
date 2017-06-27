@@ -360,7 +360,7 @@ public class WeixinServiceImpl implements WeixinService {
         String s = httpClientTemplate.executeFilePost(uploadUrl, parameters,
             file, type);
         UploadResponse read = JacksonUtil.read(s, UploadResponse.class);
-        if (read.getBaseResponse().getRet() == 0) {
+        if (read != null && read.getBaseResponse().getRet() == 0) {
             return read.getMediaId();
         }
         return null;
