@@ -74,9 +74,9 @@ public class HttpClientTemplate {
 
     @PostConstruct
     public void init() {
-        connectionManager = new PoolingHttpClientConnectionManager();
-        connectionManager.setMaxTotal(20);
-        connectionManager.setDefaultMaxPerRoute(10);
+//        connectionManager = new PoolingHttpClientConnectionManager();
+//        connectionManager.setMaxTotal(20);
+//        connectionManager.setDefaultMaxPerRoute(10);
         httpClient = HttpClients.custom()
             .setConnectionManager(connectionManager).build();
     }
@@ -573,11 +573,11 @@ public class HttpClientTemplate {
     }
 
     private void setHeader(HttpRequestBase getMethod){
-        getMethod.setHeader("User-Agent",
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36");
-        getMethod.setHeader("Referer","https://wx.qq.com/");
-        getMethod.setHeader("Origin","https://wx.qq.com");
-        getMethod.setHeader("Host","wx.qq.com");
+//        getMethod.setHeader("User-Agent",
+//            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36");
+//        getMethod.setHeader("Referer","https://wx.qq.com/");
+//        getMethod.setHeader("Origin","https://wx.qq.com");
+//        getMethod.setHeader("Host","wx.qq.com");
     }
 
     /**
