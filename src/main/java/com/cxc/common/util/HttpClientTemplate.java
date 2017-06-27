@@ -75,8 +75,8 @@ public class HttpClientTemplate {
     @PostConstruct
     public void init() {
         connectionManager = new PoolingHttpClientConnectionManager();
-        connectionManager.setMaxTotal(500);
-        connectionManager.setDefaultMaxPerRoute(100);
+        connectionManager.setMaxTotal(20);
+        connectionManager.setDefaultMaxPerRoute(10);
         httpClient = HttpClients.custom()
             .setConnectionManager(connectionManager).build();
     }
