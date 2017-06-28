@@ -92,7 +92,7 @@ public class ContentController extends BaseController {
     @ResponseBody
     public AjaxResult uploadPic(
         @RequestParam(required = true) MultipartFile file,
-        HttpServletRequest request) throws MultipartException{
+        HttpServletRequest request) throws MultipartException {
         try {
             String allowExt = ".JPEG/.JPG/.TIFF/.RAW/.BMP/.GIF/.PNG";
             String ext = getExt(file.getOriginalFilename());
@@ -123,7 +123,13 @@ public class ContentController extends BaseController {
             return initFailureResult("id cannot be null");
         }
         try {
-            contentService.deleteById(id);
+            Content content = contentService.getById(id);
+            if (content != null) {
+                contentService.deleteById(id);
+                String picPath = filePath + content.getPicUrl();
+                File file = new File(picPath);
+                file.delete();
+            }
             return initSuccessResult("删除成功");
         } catch (Exception e) {
             logger.error("[content:delete]", e);
@@ -153,7 +159,7 @@ public class ContentController extends BaseController {
 
     private String getExt(String fileName) {
         int i = fileName.lastIndexOf(".");
-        if(i == -1){
+        if (i == -1) {
             return "";
         }
         return fileName.substring(i, fileName.length());

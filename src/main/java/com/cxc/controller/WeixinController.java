@@ -26,43 +26,50 @@ import com.cxc.vo.AjaxResult;
 /**
  * @author 陈新超(hzchenxinchao@corp.netease.com)
  */
-@RestController @RequestMapping("/wx") public class WeixinController extends BaseController {
+@RestController
+@RequestMapping("/wx")
+public class WeixinController extends BaseController {
 
-	@Autowired private WeixinService weixinService;
-	@Autowired private ContentService contentService;
+    @Autowired
+    private WeixinService weixinService;
 
-	@RequestMapping("/qrcode") public AjaxResult getQrcode(Integer id, HttpServletRequest request) {
-		try {
-			QrcodeInfo qrcodeInfo = weixinService.getQrcodeInfo();
-			qrcodeInfo.setContentId(id);
-			qrcodeInfo.setTimeSec(CommonConstant.VALID_TIME_SEC);
-			qrcodeInfo.setCurrentTime(System.currentTimeMillis());
-			return initSuccessResult(qrcodeInfo);
-		} catch (Exception e) {
-			logger.error("[qrcode]", e);
-			return initFailureResult(e.getMessage());
-		}
-	}
+    @Autowired
+    private ContentService contentService;
 
-	@RequestMapping("request") public AjaxResult waitAndSendMsg(String uuid, Integer id, Long time,
-			HttpServletRequest request) {
-		try {
-			if (id == null || StringUtils.isBlank(uuid) || time == null) {
-				return initFailureResult("param is null");
-			}
-			logger.debug("[op:waitAndSendMsg] uuid:{},contentId:{}", uuid, id);
-			Content content = contentService.getById(id);
-			if (content == null) {
-				return initFailureResult("id not exsist");
-			}
-			Boolean ret = weixinService.sendMsg(uuid, content);
-			return initSuccessResult("发送成功");
-		} catch (WeixinServiceException e) {
-			logger.error("[op:waitAndSendMsg1]", e);
-			return initFailureResult(e.getMessage());
-		} catch (Exception e) {
-			logger.error("[op:waitAndSendMsg2]", e);
-			return initFailureResult("发送信息失败");
-		}
-	}
+    @RequestMapping("/qrcode")
+    public AjaxResult getQrcode(Integer id, HttpServletRequest request) {
+        try {
+            QrcodeInfo qrcodeInfo = weixinService.getQrcodeInfo();
+            qrcodeInfo.setContentId(id);
+            qrcodeInfo.setTimeSec(CommonConstant.VALID_TIME_SEC);
+            qrcodeInfo.setCurrentTime(System.currentTimeMillis());
+            return initSuccessResult(qrcodeInfo);
+        } catch (Exception e) {
+            logger.error("[qrcode]", e);
+            return initFailureResult(e.getMessage());
+        }
+    }
+
+    @RequestMapping("request")
+    public AjaxResult waitAndSendMsg(String uuid, Integer id, Long time,
+        HttpServletRequest request) {
+        try {
+            if (id == null || StringUtils.isBlank(uuid) || time == null) {
+                return initFailureResult("param is null");
+            }
+            logger.debug("[op:waitAndSendMsg] uuid:{},contentId:{}", uuid, id);
+            Content content = contentService.getById(id);
+            if (content == null) {
+                return initFailureResult("id not exsist");
+            }
+            Boolean ret = weixinService.sendMsg(uuid, content);
+            return initSuccessResult("发送成功");
+        } catch (WeixinServiceException e) {
+            logger.error("[op:waitAndSendMsg1]", e);
+            return initFailureResult(e.getMessage());
+        } catch (Exception e) {
+            logger.error("[op:waitAndSendMsg2]", e);
+            return initFailureResult("发送信息失败");
+        }
+    }
 }
