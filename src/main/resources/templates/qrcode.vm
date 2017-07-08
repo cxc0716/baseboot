@@ -28,9 +28,9 @@
 <div class="sjsc-title1" style="height:50px;">
     <h3 class="sjsc-t1l f-l" style="line-height:50px;"><a
             href="/content/list"><span><</span>返回</a></h3>
-    <button class="sjsc-btn1 f-r"
-            style="padding:9px; font-size:16px; margin: 7px 10px 0 0;"><a
-            style="color:#FFFFFF;" id="nextBtn">刷新二维码</a></button>
+    <button class="sjsc-btn1 f-r refreshBtn"
+            style="font-size:16px;padding:9px;margin: 7px 10px 0 0;" text-align: center"><span>刷新二维码</span>
+    </button>
     <div style="clear:both;"></div>
 </div>
 
@@ -61,7 +61,7 @@
     }
 
     // 刷新二维码
-    $('#nextBtn').click(function () {
+    $('.refreshBtn').click(function () {
         refreshQrcode();
     })
 
@@ -88,11 +88,13 @@
                     settime();
                     $('#qrcode').html('');
                     $('#qrcode').html('<div style="text-align:center;"><img class="qrCode" src=' + obj.data.qrcode + '></div>');
-                    doRequest(obj.data.uuid,obj.data.currentTime);
+                    doRequest(obj.data.uuid, obj.data.currentTime);
                 } else {
                     $('#qrcode').html('');
                     $('#qrcode').html('<span style="color:red; font-size:16px;">' + obj.data + '</span>');
                 }
+                $('.refreshBtn').attr("disabled", true);
+                $('.refreshBtn').css("background", "#cccccc");
             },
             error: function (data) {
             }
@@ -100,18 +102,18 @@
     }
 
     // 请求二维码数据
-    function doRequest(uuid,time) {
+    function doRequest(uuid, time) {
         $.ajax({
             type: "POST",
             dataType: "json",
             timeout: 120000,
-            url: '/wx/request?uuid=' + uuid+"&id="+id+"&time="+time,
+            url: '/wx/request?uuid=' + uuid + "&id=" + id + "&time=" + time,
             success: function (obj) {
                 if (obj.code == 200) {
-                   alert(obj.data);
-                   window.location.href="/content/list";
+                    alert(obj.data);
+                    window.location.href = "/content/list";
                 } else {
-                   alert(obj.errorMsg);
+                    alert(obj.errorMsg);
                 }
             },
             error: function (data) {
@@ -126,6 +128,10 @@
             second -= 1;
             if (second > 0) {
                 $('#second').html(second);
+                if (second == 100) {
+                    $('.refreshBtn').attr("disabled", false);
+                    $('.refreshBtn').css("background", "#50D2F3");
+                }
             } else {
                 refreshQrcode();
                 clearInterval(timer);
