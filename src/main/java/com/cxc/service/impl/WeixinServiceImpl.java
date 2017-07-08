@@ -263,8 +263,7 @@ public class WeixinServiceImpl implements WeixinService {
                 //ret !=0 时为公众号
                int ret =  contact.getVerifyFlag() & 8;
                 if (ret == 0 && contact.getUserName().startsWith("@")
-                    && content.getSendType() == 1
-                    && contact.getContactFlag() == 1) {
+                    && content.getSendType() == 1) {
                     list.add(contact);
                 } else if (contact.getUserName().startsWith("@@")) { //group
                     list.add(contact);
