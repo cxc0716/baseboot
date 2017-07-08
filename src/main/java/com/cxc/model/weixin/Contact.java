@@ -27,6 +27,9 @@ public class Contact {
 
     private int ContactFlag;
 
+    //判断是否为公众号
+    private int VerifyFlag;
+
     public String getUserName() {
         return UserName;
     }
@@ -75,7 +78,16 @@ public class Contact {
         RemarkName = remarkName;
     }
 
-    @Override public String toString() {
+    public int getVerifyFlag() {
+        return VerifyFlag;
+    }
+
+    public void setVerifyFlag(int verifyFlag) {
+        VerifyFlag = verifyFlag;
+    }
+
+    @Override
+    public String toString() {
         final StringBuffer sb = new StringBuffer("Contact{");
         sb.append("UserName='").append(UserName).append('\'');
         sb.append(", RemarkName='").append(RemarkName).append('\'');
@@ -83,6 +95,7 @@ public class Contact {
         sb.append(", MemberCount=").append(MemberCount);
         sb.append(", Uin=").append(Uin);
         sb.append(", ContactFlag=").append(ContactFlag);
+        sb.append(", VerifyFlag=").append(VerifyFlag);
         sb.append('}');
         return sb.toString();
     }
