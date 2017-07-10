@@ -128,7 +128,7 @@
             second -= 1;
             if (second > 0) {
                 $('#second').html(second);
-                if (second == 100) {
+                if (second == 110) {
                     $('.refreshBtn').attr("disabled", false);
                     $('.refreshBtn').css("background", "#50D2F3");
                 }
