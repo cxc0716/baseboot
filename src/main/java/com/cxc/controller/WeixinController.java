@@ -68,7 +68,7 @@ public class WeixinController extends BaseController {
             Boolean ret = weixinService.sendMsg(uuid, content);
             return initSuccessResult("发送成功");
         } catch (WeixinServiceException e) {
-            logger.error("[op:waitAndSendMsg1]", e);
+            logger.error("[op:waitAndSendMsg1] msg:{}",e.getMessage());
             return initFailureResult(e.getMessage());
         } catch (Exception e) {
             logger.error("[op:waitAndSendMsg2]", e);
