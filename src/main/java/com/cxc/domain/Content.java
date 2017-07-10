@@ -27,6 +27,7 @@ public class Content implements Serializable {
 	private Integer creator;
 
 	private String timeStr;
+	private String userNote;
 
 	public Integer getId() {
 		return id;
@@ -114,5 +115,13 @@ public class Content implements Serializable {
 
 	public void setTimeStr(String timeStr) {
 		this.timeStr = timeStr;
+	}
+
+	public String getUserNote() {
+		return userNote;
+	}
+
+	public void setUserNote(String userNote) {
+		this.userNote = userNote;
 	}
 }

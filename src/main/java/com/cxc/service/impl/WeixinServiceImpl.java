@@ -104,7 +104,8 @@ public class WeixinServiceImpl implements WeixinService {
                 MsgInfo msgInfo = new MsgInfo();
                 msgInfo.setFromUserName(userName);
                 msgInfo.setToUserName(contact.getUserName());
-                msgInfo.setContent(content.getText());
+                msgInfo.setContent(
+                    content.getText() + "\n【" + content.getUserNote() + "】");
                 postBody.setMsg(msgInfo);
                 postBody.setScene(0);
                 if (StringUtils.isNotBlank(content.getPicUrl())) {
@@ -258,15 +259,16 @@ public class WeixinServiceImpl implements WeixinService {
         Content content) {
         List<Contact> list = Lists.newArrayList();
         for (Contact contact: contacts) {
-            if(content.getSendType() == 2 ){
+            if (content.getSendType() == 2) {
                 if (contact.getUserName().startsWith("@@")) { //group
                     list.add(contact);
                 }
-            }else{
-                if (content.getSex() == 0 || contact.getSex() == content.getSex()) {
+            } else {
+                if (content.getSex() == 0
+                    || contact.getSex() == content.getSex()) {
                     //friend
                     //ret !=0 时为公众号
-                    int ret =  contact.getVerifyFlag() & 8;
+                    int ret = contact.getVerifyFlag() & 8;
                     if (ret == 0 && contact.getUserName().startsWith("@")
                         && content.getSendType() == 1) {
                         list.add(contact);

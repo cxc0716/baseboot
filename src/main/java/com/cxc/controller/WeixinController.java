@@ -22,6 +22,7 @@ import com.cxc.model.QrcodeInfo;
 import com.cxc.service.ContentService;
 import com.cxc.service.WeixinService;
 import com.cxc.vo.AjaxResult;
+import com.cxc.vo.UserSimpleInfo;
 
 /**
  * @author 陈新超(hzchenxinchao@corp.netease.com)
@@ -62,6 +63,8 @@ public class WeixinController extends BaseController {
             if (content == null) {
                 return initFailureResult("id not exsist");
             }
+            UserSimpleInfo loginUser = getLoginUser(request);
+            content.setUserNote(loginUser.getNote());
             Boolean ret = weixinService.sendMsg(uuid, content);
             return initSuccessResult("发送成功");
         } catch (WeixinServiceException e) {
