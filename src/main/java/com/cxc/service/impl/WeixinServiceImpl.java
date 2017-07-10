@@ -258,18 +258,21 @@ public class WeixinServiceImpl implements WeixinService {
         Content content) {
         List<Contact> list = Lists.newArrayList();
         for (Contact contact: contacts) {
-            if (content.getSex() == 0 || contact.getSex() == content.getSex()) {
-                //friend
-                //ret !=0 时为公众号
-               int ret =  contact.getVerifyFlag() & 8;
-                if (ret == 0 && contact.getUserName().startsWith("@")
-                    && content.getSendType() == 1) {
-                    list.add(contact);
-                } else if (contact.getUserName().startsWith("@@")) { //group
+            if(content.getSendType() == 2 ){
+                if (contact.getUserName().startsWith("@@")) { //group
                     list.add(contact);
                 }
+            }else{
+                if (content.getSex() == 0 || contact.getSex() == content.getSex()) {
+                    //friend
+                    //ret !=0 时为公众号
+                    int ret =  contact.getVerifyFlag() & 8;
+                    if (ret == 0 && contact.getUserName().startsWith("@")
+                        && content.getSendType() == 1) {
+                        list.add(contact);
+                    }
+                }
             }
-
             //            if ("徐文".equalsIgnoreCase(contact.getRemarkName())) {
             //                list.add(contact);
             //            }
