@@ -243,18 +243,6 @@ public class WeixinServiceImpl implements WeixinService {
         return getContactList(loginInitInfo, httpClientTemplate);
     }
 
-    private final String[] specialArray = new String[] { "newsapp", "fmessage",
-        "filehelper", "weibo", "qqmail", "fmessage", "tmessage", "qmessage",
-        "qqsync", "floatbottle", "lbsapp", "shakeapp", "medianote", "qqfriend",
-        "readerapp", "blogapp", "facebookapp", "masssendapp", "meishiapp",
-        "feedsapp", "voip", "blogappweixin", "weixin", "brandsessionholder",
-        "weixinreminder", "wxid_novlwrv3lqwv11", "gh_22b87fa7cb3c",
-        "officialaccounts", "notification_messages", "wxid_novlwrv3lqwv11",
-        "gh_22b87fa7cb3c", "wxitil", "userexperience_alarm",
-        "notification_messages" };
-
-    List<String> specialList = Lists.newArrayList(specialArray);
-
     private List<Contact> filterContact(List<Contact> contacts,
         Content content) {
         List<Contact> list = Lists.newArrayList();
@@ -265,20 +253,20 @@ public class WeixinServiceImpl implements WeixinService {
                 }
             } else {
                 if (content.getSex() == 0
-                    || contact.getSex() == content.getSex()) {
+                    || contact.getSex() == content.getSex().intValue()) {
                     //friend
                     //ret !=0 时为公众号
                     int ret = contact.getVerifyFlag() & 8;
-                    if (ret == 0 && contact.getUserName().startsWith("@")
-                        && content.getSendType() == 1) {
+                    if (ret == 0 && contact.getUserName().startsWith("@")) {
                         list.add(contact);
                     }
                 }
             }
-            //            if ("徐文".equalsIgnoreCase(contact.getRemarkName())) {
-            //                list.add(contact);
-            //            }
-
+        }
+        //全部过滤时应打印日志警报
+        if (list.isEmpty()) {
+            logger.warn("[filterList] no-match,config={},list={}",
+                JacksonUtil.write(content), JacksonUtil.write(contacts));
         }
         return list;
     }
