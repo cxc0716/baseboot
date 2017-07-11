@@ -229,6 +229,7 @@ public class WeixinServiceImpl implements WeixinService {
         contact = String.format(contact, loginInitInfo.getPassTicket(),
             System.currentTimeMillis(), loginInitInfo.getSkey());
         String s5 = httpClientTemplate.executeGet(contact);
+        logger.info("[contactList] list={}", s5);
         ContactResponse contactResponse = JSON.parseObject(s5,
             ContactResponse.class);
         int ret = contactResponse.getBaseResponse().getRet();
