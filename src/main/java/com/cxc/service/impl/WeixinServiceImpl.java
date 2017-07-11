@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.cxc.common.exception.WeixinServiceException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.http.NameValuePair;
@@ -29,6 +28,7 @@ import org.springframework.util.CollectionUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cxc.common.constant.CommonConstant;
+import com.cxc.common.exception.WeixinServiceException;
 import com.cxc.common.util.HttpClientTemplate;
 import com.cxc.common.util.JacksonUtil;
 import com.cxc.domain.Content;
@@ -373,7 +373,8 @@ public class WeixinServiceImpl implements WeixinService {
         String result = httpClientTemplate.executePost(url,
             JacksonUtil.write(body), "utf-8");
         ContactResponse read = JacksonUtil.read(result, ContactResponse.class);
-        if (read != null && read.getBaseResponse().getRet() == 0) {
+        if (read != null && read.getBaseResponse() != null
+            && read.getBaseResponse().getRet() == 0) {
             return true;
         }
         return false;

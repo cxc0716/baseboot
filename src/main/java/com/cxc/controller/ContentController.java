@@ -15,8 +15,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
-import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -144,7 +144,9 @@ public class ContentController extends BaseController {
             Content content = contentService.getById(id);
             if (content != null) {
                 model.addAttribute("data", content);
-                model.addAttribute("picUrl", urlPrefix + content.getPicUrl());
+                if(StringUtils.isNotBlank(content.getPicUrl())){
+                    model.addAttribute("picUrl", urlPrefix + content.getPicUrl());
+                }
             }
         }
         return "edit";
