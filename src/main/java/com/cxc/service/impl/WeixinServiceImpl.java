@@ -93,6 +93,10 @@ public class WeixinServiceImpl implements WeixinService {
 
     @Override
     public Boolean sendMsg(String uuid, Content content) throws Exception {
+        if (StringUtils.isBlank(content.getPicUrl())
+            && StringUtils.isBlank(content.getText())) {
+            throw new WeixinServiceException("发送内容未编辑");
+        }
         HttpClientTemplate template = new HttpClientTemplate();
         template.init();
         Map<String, String> result = waitAndGetTicket(uuid, template);
@@ -101,7 +105,6 @@ public class WeixinServiceImpl implements WeixinService {
         if (StringUtils.isBlank(ticket)) {
             throw new WeixinServiceException("扫描超时，请刷新二维码重新扫描");
         }
-
         String url = result.get("url");
         String serverNo = getWxServerNo(url);
         TokenInfo loginInitInfo = getLoginInitInfo(url, template);
