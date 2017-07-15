@@ -38,6 +38,7 @@ import com.cxc.model.QrcodeInfo;
 import com.cxc.model.TokenInfo;
 import com.cxc.model.weixin.Contact;
 import com.cxc.model.weixin.ContactResponse;
+import com.cxc.model.weixin.SendMsgResponse;
 import com.cxc.model.weixin.UploadResponse;
 import com.cxc.service.WeixinService;
 import com.google.common.collect.Lists;
@@ -86,7 +87,7 @@ public class WeixinServiceImpl implements WeixinService {
         String serverNo = "";
         int index = url.indexOf("wx2.");
         if (index != -1) {
-            logger.info("redirect url change:{}",url);
+            logger.info("redirect url change:{}", url);
             serverNo = "2";
         }
         return serverNo;
@@ -255,7 +256,6 @@ public class WeixinServiceImpl implements WeixinService {
             loginInitInfo.getPassTicket(), System.currentTimeMillis(),
             loginInitInfo.getSkey());
         String s5 = httpClientTemplate.executeGet(contact);
-        logger.info("[contactList] list={}", s5);
         ContactResponse contactResponse = JSON.parseObject(s5,
             ContactResponse.class);
         int ret = contactResponse.getBaseResponse().getRet();
@@ -305,7 +305,8 @@ public class WeixinServiceImpl implements WeixinService {
             sendMsg = String.format(sendMsg, serverNo, passTicket);
             String s6 = httpClientTemplate.executePost(sendMsg,
                 JacksonUtil.write(body), "utf-8");
-            logger.info("sendmsg result:{}", s6);
+            SendMsgResponse read = JacksonUtil.read(s6, SendMsgResponse.class);
+            logger.info("sendmsg result:{}", read.getBaseResponse().getRet());
             return true;
         } catch (IOException e) {
             logger.error("[sendMsg]", e);
