@@ -93,7 +93,7 @@ public class WeixinServiceImpl implements WeixinService {
 
     @Override
     public Boolean sendMsg(String uuid, Content content) throws Exception {
-        if (StringUtils.isBlank(content.getPicUrl())
+        if (content == null || StringUtils.isBlank(content.getPicUrl())
             && StringUtils.isBlank(content.getText())) {
             throw new WeixinServiceException("发送内容未编辑");
         }
