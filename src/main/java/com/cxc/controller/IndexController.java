@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cxc.common.util.PasswordEncoder;
 import com.cxc.domain.HiUser;
+import com.cxc.model.YesNo;
 import com.cxc.service.UserService;
 import com.cxc.vo.AjaxResult;
 import com.cxc.vo.UserSimpleInfo;
@@ -58,11 +59,11 @@ public class IndexController extends BaseController {
 					return initFailureResult("用户已被删除");
 				}
 				Integer accountLocked = hiUser.getAccountLocked();
-				if (accountLocked != null && accountLocked.intValue() == 1) {
+				if (accountLocked != null && accountLocked.intValue() == YesNo.YESNO_YES) {
 					return initFailureResult("帐号被锁定，请联系管理员");
 				}
 				Integer accountEnabled = hiUser.getAccountEnabled();
-				if (accountEnabled != null && accountEnabled.intValue() == 0) {
+				if (accountEnabled != null && accountEnabled.intValue() == YesNo.YESNO_NO) {
 					return initFailureResult("帐号不可用，请联系管理员");
 				}
 				Date expiredDate = hiUser.getExpiredDate();
