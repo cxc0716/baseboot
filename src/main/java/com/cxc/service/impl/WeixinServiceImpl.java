@@ -86,6 +86,7 @@ public class WeixinServiceImpl implements WeixinService {
         String serverNo = "";
         int index = url.indexOf("wx2.");
         if (index != -1) {
+            logger.info("redirect url change:{}",url);
             serverNo = "2";
         }
         return serverNo;
