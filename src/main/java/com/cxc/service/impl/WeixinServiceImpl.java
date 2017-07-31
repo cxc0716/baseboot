@@ -144,8 +144,9 @@ public class WeixinServiceImpl implements WeixinService {
             }
         }
         logger.info(
-            "[result] successfully send total {} messages,total cost {} milliSec",
-            contacts.size(), System.currentTimeMillis() - start);
+            "[result] successfully send total {} messages,total cost {} milliSec,contentId={}",
+            contacts.size(), System.currentTimeMillis() - start,
+            content.getId());
         return true;
     }
 
