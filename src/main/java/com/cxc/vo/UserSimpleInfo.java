@@ -1,14 +1,5 @@
-/**
- * @(#)UserVO.java, 2017/6/18.
- * 
- * Copyright 2017 Netease, Inc. All rights reserved.
- * NETEASE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 package com.cxc.vo;
 
-/**
- * @author 陈新超(hzchenxinchao@corp.netease.com)
- */
 public class UserSimpleInfo {
     private Integer id;
 

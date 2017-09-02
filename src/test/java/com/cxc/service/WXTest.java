@@ -1,9 +1,3 @@
-/**
- * @(#)WXTest.java, 2017/6/27.
- * 
- * Copyright 2017 Netease, Inc. All rights reserved.
- * NETEASE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 package com.cxc.service;
 
 import org.junit.Test;
@@ -13,9 +7,6 @@ import com.cxc.BaseTest;
 import com.cxc.domain.Content;
 import com.cxc.model.QrcodeInfo;
 
-/**
- * @author 陈新超(hzchenxinchao@corp.netease.com)
- */
 public class WXTest extends BaseTest {
     @Autowired
     private WeixinService weixinService;

@@ -1,9 +1,3 @@
-/**
- * @(#)WeixinServiceController.java, 2017/6/18.
- * <p>
- * Copyright 2017 Netease, Inc. All rights reserved.
- * NETEASE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 package com.cxc.controller;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,9 +18,6 @@ import com.cxc.service.WeixinService;
 import com.cxc.vo.AjaxResult;
 import com.cxc.vo.UserSimpleInfo;
 
-/**
- * @author 陈新超(hzchenxinchao@corp.netease.com)
- */
 @RestController
 @RequestMapping("/wx")
 public class WeixinController extends BaseController {

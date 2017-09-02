@@ -1,9 +1,3 @@
-/**
- * @(#)BaseController.java, 2017/6/18.
- * 
- * Copyright 2017 Netease, Inc. All rights reserved.
- * NETEASE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 package com.cxc.controller;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,9 +12,6 @@ import com.cxc.vo.AjaxResult;
 import com.cxc.vo.ResponseCode;
 import com.cxc.vo.UserSimpleInfo;
 
-/**
- * @author 陈新超(hzchenxinchao@corp.netease.com)
- */
 public class BaseController {
 
     protected static final Logger logger = LoggerFactory

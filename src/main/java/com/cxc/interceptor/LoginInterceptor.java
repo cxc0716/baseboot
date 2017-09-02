@@ -1,9 +1,3 @@
-/**
- * @(#)LoginInterceptor.java, 2017/6/10.
- * 
- * Copyright 2017 Netease, Inc. All rights reserved.
- * NETEASE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 package com.cxc.interceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,9 +5,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-/**
- * @author 陈新超(hzchenxinchao@corp.netease.com)
- */
 public class LoginInterceptor extends HandlerInterceptorAdapter {
 
     @Override

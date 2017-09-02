@@ -1,9 +1,3 @@
-/**
- * @(#)ContentServiceImpl.java, 2017/6/18.
- * 
- * Copyright 2017 Netease, Inc. All rights reserved.
- * NETEASE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 package com.cxc.service.impl;
 
 import java.util.List;
@@ -15,9 +9,6 @@ import com.cxc.domain.Content;
 import com.cxc.mapper.ContentMapper;
 import com.cxc.service.ContentService;
 
-/**
- * @author 陈新超(hzchenxinchao@corp.netease.com)
- */
 @Service
 public class ContentServiceImpl implements ContentService {
 

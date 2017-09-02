@@ -1,9 +1,3 @@
-/**
- * @(#)HttpClientTemplate.java, 2015年9月8日.
- *
- * Copyright 2015 Netease, Inc. All rights reserved.
- * NETEASE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 package com.cxc.common.util;
 
 import java.io.File;

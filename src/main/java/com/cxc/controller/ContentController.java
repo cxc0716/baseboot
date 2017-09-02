@@ -1,9 +1,3 @@
-/**
- * @(#)ContentController.java, 2017/6/18.
- * 
- * Copyright 2017 Netease, Inc. All rights reserved.
- * NETEASE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
 package com.cxc.controller;
 
 import java.io.File;
@@ -34,9 +28,6 @@ import com.cxc.vo.AjaxResult;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-/**
- * @author 陈新超(hzchenxinchao@corp.netease.com)
- */
 @Controller
 public class ContentController extends BaseController {
     @Autowired
