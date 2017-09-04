@@ -85,10 +85,12 @@ public class WeixinServiceImpl implements WeixinService {
 
     private String getWxServerNo(String url) {
         String serverNo = "";
-        int index = url.indexOf("wx2.");
-        if (index != -1) {
+        int index = url.indexOf("wx.");
+        if (index == -1) {
+            int index1 = url.indexOf("wx");
+            int index2 = url.indexOf(".");
+            serverNo = url.substring(index1 + 2, index2);
             logger.info("redirect url change:{}", url);
-            serverNo = "2";
         }
         return serverNo;
     }
