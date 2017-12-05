@@ -15,4 +15,5 @@ public interface WeixinService {
 	public QrcodeInfo getQrcodeInfo();
 
 	public Boolean sendMsg(String uuid,Content content) throws Exception;
+	public Boolean sendMsg2(String uuid,Content content) throws Exception;
 }

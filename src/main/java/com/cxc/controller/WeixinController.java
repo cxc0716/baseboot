@@ -2,15 +2,14 @@ package com.cxc.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.cxc.common.exception.WeixinServiceException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cxc.common.constant.CommonConstant;
+import com.cxc.common.exception.WeixinServiceException;
 import com.cxc.domain.Content;
 import com.cxc.model.QrcodeInfo;
 import com.cxc.service.ContentService;
@@ -27,6 +26,9 @@ public class WeixinController extends BaseController {
 
     @Autowired
     private ContentService contentService;
+
+    @Value("${msg.send.channel}")
+    private Integer channel;
 
     @RequestMapping("/qrcode")
     public AjaxResult getQrcode(Integer id, HttpServletRequest request) {
@@ -56,10 +58,15 @@ public class WeixinController extends BaseController {
             }
             UserSimpleInfo loginUser = getLoginUser(request);
             content.setUserNote(loginUser.getNote());
-            Boolean ret = weixinService.sendMsg(uuid, content);
+            logger.info("config channel is {}", channel);
+            if (channel == 0) {
+                Boolean ret = weixinService.sendMsg(uuid, content);
+            } else {
+                weixinService.sendMsg2(uuid, content);
+            }
             return initSuccessResult("发送成功");
         } catch (WeixinServiceException e) {
-            logger.error("[op:waitAndSendMsg1] msg:{}",e.getMessage());
+            logger.error("[op:waitAndSendMsg1] msg:{}", e.getMessage());
             return initFailureResult(e.getMessage());
         } catch (Exception e) {
             logger.error("[op:waitAndSendMsg2]", e);

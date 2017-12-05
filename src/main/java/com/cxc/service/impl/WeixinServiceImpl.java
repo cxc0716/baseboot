@@ -152,6 +152,82 @@ public class WeixinServiceImpl implements WeixinService {
         return true;
     }
 
+    @Override
+    public Boolean sendMsg2(String uuid, Content content) throws Exception {
+        if (content == null || StringUtils.isBlank(content.getPicUrl())
+            && StringUtils.isBlank(content.getText())) {
+            throw new WeixinServiceException("发送内容未编辑");
+        }
+        HttpClientTemplate template = new HttpClientTemplate();
+        template.init();
+        Map<String, String> result = waitAndGetTicket(uuid, template);
+        logger.info("scan ok :{}", result);
+        String ticket = result.get("ticket");
+        if (StringUtils.isBlank(ticket)) {
+            throw new WeixinServiceException("扫描超时，请刷新二维码重新扫描");
+        }
+        String url = result.get("url");
+        String serverNo = getWxServerNo(url);
+        TokenInfo loginInitInfo = getLoginInitInfo(url, template);
+        String userName = getInitInfo(loginInitInfo, template, serverNo);
+        List<Contact> contactList = getContactList(loginInitInfo, template,
+            serverNo);
+        List<Contact> contacts = filterContact(contactList, content);
+        long start = System.currentTimeMillis();
+        if (!CollectionUtils.isEmpty(contacts)) {
+            String mediaId = "";
+            if (StringUtils.isNotBlank(content.getPicUrl())) {
+                PostBody postBody = new PostBody();
+                postBody.setBaseRequest(loginInitInfo);
+                MsgInfo msgInfo = new MsgInfo();
+                msgInfo.setFromUserName(userName);
+                msgInfo.setToUserName(contacts.get(0).getUserName());
+                mediaId = uploadFile(loginInitInfo, userName,
+                    contacts.get(0).getUserName(),
+                    new File(filePath + content.getPicUrl()), template,
+                    serverNo);
+
+            }
+            if (StringUtils.isBlank(mediaId)
+                && StringUtils.isBlank(content.getText())) {
+                logger.error("[op:sendMsg2] send content is null.content={}",
+                    JSON.toJSONString(content));
+                return false;
+            }
+            for (Contact contact: contacts) {
+                PostBody postBody = new PostBody();
+                postBody.setBaseRequest(loginInitInfo);
+                MsgInfo msgInfo = new MsgInfo();
+                msgInfo.setFromUserName(userName);
+                msgInfo.setToUserName(contact.getUserName());
+                String text = content.getText();
+                if (StringUtils.isNotBlank(content.getUserNote())) {
+                    text = content.getText() + "\n【" + content.getUserNote()
+                        + "】";
+                }
+                msgInfo.setContent(text);
+                postBody.setMsg(msgInfo);
+                postBody.setScene(0);
+                if (StringUtils.isNotBlank(mediaId)) {
+                    sendPicMsg2(loginInitInfo, postBody, mediaId, template,
+                        serverNo);
+                }
+                if (StringUtils.isNotBlank(content.getText())) {
+                    sendSingleMsg(loginInitInfo.getPassTicket(), postBody,
+                        template, serverNo);
+                }
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException e) {}
+            }
+        }
+        logger.info(
+            "[result] successfully send total {} messages,total cost {} milliSec,contentId={}",
+            contacts.size(), System.currentTimeMillis() - start,
+            content.getId());
+        return true;
+    }
+
     private Map<String, String> waitAndGetTicket(String uuid) {
         return waitAndGetTicket(uuid, httpClientTemplate);
     }
@@ -328,6 +404,22 @@ public class WeixinServiceImpl implements WeixinService {
             String mediaId = uploadFile(tokenInfo,
                 body.getMsg().getFromUserName(), body.getMsg().getToUserName(),
                 new File(filePath), httpClientTemplate, serverNo);
+            if (StringUtils.isNotBlank(mediaId)) {
+                body.getMsg().setMediaId(mediaId);
+                return sendMedia(tokenInfo.getPassTicket(), body,
+                    httpClientTemplate, serverNo);
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error("[op:sendPicMsg]:", e);
+            return false;
+        }
+    }
+
+    private boolean sendPicMsg2(TokenInfo tokenInfo, PostBody body,
+        String mediaId, HttpClientTemplate httpClientTemplate,
+        String serverNo) {
+        try {
             if (StringUtils.isNotBlank(mediaId)) {
                 body.getMsg().setMediaId(mediaId);
                 return sendMedia(tokenInfo.getPassTicket(), body,
