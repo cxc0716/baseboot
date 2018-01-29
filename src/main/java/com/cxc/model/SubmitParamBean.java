@@ -10,6 +10,7 @@ public class SubmitParamBean {
 
     private int unit;
 
+    private int price;
 
-
+    private String uid;
 }
