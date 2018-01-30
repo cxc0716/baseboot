@@ -5,6 +5,8 @@
  */
 package com.cxc.service;
 
+import java.math.BigDecimal;
+
 import com.cxc.model.SubmitParamBean;
 import com.cxc.model.UserLoginParamBean;
 
@@ -15,6 +17,8 @@ public interface RequestService {
 
     public boolean submit(SubmitParamBean param);
 
-    public boolean login(UserLoginParamBean param);
+    public boolean login();
+
+    public BigDecimal getResultRefund();
 
 }

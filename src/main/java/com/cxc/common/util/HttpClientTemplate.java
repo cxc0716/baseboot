@@ -45,6 +45,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
@@ -63,7 +65,8 @@ import com.google.common.collect.Maps;
  * <li>{@code executePost(url, parameters)}
  * <li>{@code executePost(url, parameters, charset)}
  */
-@Component
+@Component()
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, value = "prototype")
 public class HttpClientTemplate {
 
     private static final Logger logger = LoggerFactory

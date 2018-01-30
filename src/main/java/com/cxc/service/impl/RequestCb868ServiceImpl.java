@@ -1,12 +1,12 @@
 package com.cxc.service.impl;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +19,37 @@ import com.cxc.common.util.HttpClientTemplate;
 import com.cxc.common.util.ImageUtil;
 import com.cxc.model.SubmitParamBean;
 import com.cxc.model.SubmitParamItemBean;
-import com.cxc.model.UserLoginParamBean;
 import com.cxc.service.RequestService;
 import com.google.common.collect.Lists;
 
 @Service("requestCb868Service")
 public class RequestCb868ServiceImpl implements RequestService {
 
-    @Value("${platform.login.url.1}")
-    private String loginUrl;
+    @Value("${platform.1.host}")
+    private String host;
+
+    @Value("${platform.1.code.path}")
+    private String imgTempPath;
+
+    @Value("${platform.1.login.username}")
+    private String username;
+
+    @Value("${platform.1.login.password}")
+    private String password;
+
+    @Value("${platform.1.login.timeout:3000}")
+    private int timeout;
 
     @Autowired
     private HttpClientTemplate httpClientTemplate;
+
+    public static final String LOGIN_GET_URI = "/cagamesclient/login/login.do?method=getVerifyImage";
+
+    public static final String LOGIN_CHECK_URI = "/cagamesclient/login/login.do?method=checkVerifyCode";
+
+    public static final String LOGIN_VALIDATE_URI = "/cagamesclient/login/login.do?method=validate";
+
+    public static final String USER_INFO_URI = "/cagamesclient/home/userInfo.do?method=getUserFund";
 
     @Override
     public boolean submit(SubmitParamBean param) {
@@ -38,24 +57,77 @@ public class RequestCb868ServiceImpl implements RequestService {
     }
 
     @Override
-    public boolean login(UserLoginParamBean param) {
+    public boolean login() {
+        String s = null;
         try {
-            String result = httpClientTemplate.executeGet(loginUrl);
-            System.out.println("result-->" + result);
-            String getImgUrl = "https://api.cb868.net:1888/cagamesclient/login/login.do?method=getVerifyImage";
-            String s = httpClientTemplate.executeGet(getImgUrl);
-            System.out.println("result2-->" + s);
-            if (StringUtils.isNotBlank(result)) {
-                int start = result.indexOf("base64,");
-                String substring = result.substring(start + 7);
-                int endIndex = substring.indexOf("\")");
-                String imgStr = substring.substring(0, endIndex);
-                System.out.println("imgStr-->" + imgStr);
+            s = httpClientTemplate.executeGet(host + LOGIN_GET_URI);
+            JSONObject jsonObject = JSON.parseObject(s);
+            Object data = jsonObject.get("data");
+            String tempName = System.currentTimeMillis() + ".png";
+            boolean ret = ImageUtil.generateImage(data + "",
+                imgTempPath + tempName);
+            if (ret) {
+                //todo-cxc auto recoginize
+                String verifyCode = getVerifyCode(imgTempPath + tempName);
+                org.apache.http.NameValuePair verifyCode1 = new BasicNameValuePair(
+                    "verifyCode", verifyCode);
+                ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+                nameValuePairs.add(verifyCode1);
+                String checkResult = httpClientTemplate
+                    .executePost(host + LOGIN_CHECK_URI, nameValuePairs);
+                JSONObject checkResponse = JSON.parseObject(checkResult);
+                int success = checkResponse.getIntValue("success");
+                if (success == 1) {
+                    //doLogin
+                    org.apache.http.NameValuePair usernamePair = new BasicNameValuePair(
+                        "userName", username);
+                    org.apache.http.NameValuePair userPwd = new BasicNameValuePair(
+                        "userPwd", password);
+                    org.apache.http.NameValuePair code = new BasicNameValuePair(
+                        "verifyCode", verifyCode);
+                    org.apache.http.NameValuePair channelType = new BasicNameValuePair(
+                        "channelType", "web");
+                    org.apache.http.NameValuePair timout = new BasicNameValuePair(
+                        "timeout", timeout + "");
+                    ArrayList<NameValuePair> nameValuePairs2 = Lists
+                        .newArrayList(usernamePair, userPwd, code, channelType,
+                            timout);
+                    String loginJson = httpClientTemplate.executePost(
+                        host + LOGIN_VALIDATE_URI, nameValuePairs2, "utf-8");
+                    int loginResult = JSON.parseObject(loginJson)
+                        .getIntValue("success");
+                    if (loginResult == 1) {
+                        return true;
+                    }
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return false;
+    }
+
+    private String getVerifyCode(String imgPath) {
+        //todo 验证码识别处理
+        return "";
+    }
+
+    @Override
+    public BigDecimal getResultRefund() {
+        String url = host + USER_INFO_URI;
+        try {
+            String response = httpClientTemplate.executeGet(url);
+            JSONObject jsonObject = JSON.parseObject(response);
+            int success = jsonObject.getIntValue("success");
+            if (success == 1) {
+                BigDecimal resultMoney = jsonObject
+                    .getBigDecimal("availableBalance");
+                return resultMoney;
+            }
+        } catch (IOException e) {
+            return null;
+        }
+        return BigDecimal.ZERO;
     }
 
     public static void main(String[] args)
@@ -148,7 +220,7 @@ public class RequestCb868ServiceImpl implements RequestService {
             JSON.toJSONString(Lists.newArrayList(item)));
         String s6 = httpClientTemplate2.executePost(submitUrl,
             Lists.newArrayList(p1, p2, p3, p4, p5, p6, p7, p8, p9));
-        System.out.println("submit result-->"+s6);
+        System.out.println("submit result-->" + s6);
 
         //        gameid:1
 
