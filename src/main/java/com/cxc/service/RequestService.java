@@ -6,6 +6,7 @@
 package com.cxc.service;
 
 import com.cxc.model.SubmitParamBean;
+import com.cxc.model.UserLoginParamBean;
 
 /**
  * @author 陈新超(hzchenxinchao@corp.netease.com)
@@ -13,5 +14,7 @@ import com.cxc.model.SubmitParamBean;
 public interface RequestService {
 
     public boolean submit(SubmitParamBean param);
+
+    public boolean login(UserLoginParamBean param);
 
 }

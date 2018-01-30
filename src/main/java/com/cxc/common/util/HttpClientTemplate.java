@@ -3,11 +3,17 @@ package com.cxc.common.util;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -23,6 +29,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntity;
@@ -66,11 +77,48 @@ public class HttpClientTemplate {
 
     private String defaultCharset = "utf-8";
 
+    public static SSLContext createIgnoreVerifySSL()
+        throws NoSuchAlgorithmException, KeyManagementException {
+        SSLContext sc = SSLContext.getInstance("SSLv3");
+
+        // 实现一个X509TrustManager接口，用于绕过验证，不用修改里面的方法
+        X509TrustManager trustManager = new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(
+                java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
+                String paramString) throws CertificateException {}
+
+            @Override
+            public void checkServerTrusted(
+                java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
+                String paramString) throws CertificateException {}
+
+            @Override
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+        };
+
+        sc.init(null, new TrustManager[] { trustManager }, null);
+        return sc;
+    }
+
     @PostConstruct
-    public void init() {
-//        connectionManager = new PoolingHttpClientConnectionManager();
-//        connectionManager.setMaxTotal(20);
-//        connectionManager.setDefaultMaxPerRoute(10);
+    public void init() throws KeyManagementException, NoSuchAlgorithmException {
+        //        connectionManager = new PoolingHttpClientConnectionManager();
+        //        connectionManager.setMaxTotal(20);
+        //        connectionManager.setDefaultMaxPerRoute(10);
+        //采用绕过验证的方式处理https请求
+        SSLContext sslcontext = createIgnoreVerifySSL();
+
+        // 设置协议http和https对应的处理socket链接工厂的对象
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder
+            .<ConnectionSocketFactory>create()
+            .register("http", PlainConnectionSocketFactory.INSTANCE)
+            .register("https", new SSLConnectionSocketFactory(sslcontext))
+            .build();
+        connectionManager = new PoolingHttpClientConnectionManager(
+            socketFactoryRegistry);
         httpClient = HttpClients.custom()
             .setConnectionManager(connectionManager).build();
     }
@@ -566,12 +614,12 @@ public class HttpClientTemplate {
         return getMethod;
     }
 
-    private void setHeader(HttpRequestBase getMethod){
-//        getMethod.setHeader("User-Agent",
-//            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36");
-//        getMethod.setHeader("Referer","https://wx.qq.com/");
-//        getMethod.setHeader("Origin","https://wx.qq.com");
-//        getMethod.setHeader("Host","wx.qq.com");
+    private void setHeader(HttpRequestBase getMethod) {
+        //        getMethod.setHeader("User-Agent",
+        //            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36");
+        //        getMethod.setHeader("Referer","https://wx.qq.com/");
+        //        getMethod.setHeader("Origin","https://wx.qq.com");
+        //        getMethod.setHeader("Host","wx.qq.com");
     }
 
     /**
@@ -628,7 +676,7 @@ public class HttpClientTemplate {
             logger.error(
                 "[op: getResponseContentEntity] http request fail, respond={}",
                 JSON.toJSON(statusLine));
-//            throw new IOException("status code: " + statusCode);
+            //            throw new IOException("status code: " + statusCode);
         }
         return httpResponse.getEntity();
     }
@@ -706,14 +754,16 @@ public class HttpClientTemplate {
         if (file != null && file.exists()) {
 
             HttpPost httpPost = getHttpPost(url);
-           /* httpPost.setHeader("User-Agent",
-                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36");
-            httpPost.setHeader("Referer","https://wx.qq.com/");
-            httpPost.setHeader("Origin","https://wx.qq.com");*/
+            /*
+             * httpPost.setHeader("User-Agent",
+             * "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36"
+             * ); httpPost.setHeader("Referer","https://wx.qq.com/");
+             * httpPost.setHeader("Origin","https://wx.qq.com");
+             */
             FileBody bin = new FileBody(file, contentType);
-//            MultipartEntity reqEntity = new MultipartEntity(
-//                HttpMultipartMode.BROWSER_COMPATIBLE, null,
-//                Charset.forName("UTF-8"));
+            //            MultipartEntity reqEntity = new MultipartEntity(
+            //                HttpMultipartMode.BROWSER_COMPATIBLE, null,
+            //                Charset.forName("UTF-8"));
             MultipartEntity reqEntity = new MultipartEntity();
             reqEntity.addPart("filename", bin);
 
