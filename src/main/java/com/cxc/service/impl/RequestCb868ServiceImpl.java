@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,16 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cxc.common.util.HttpClientTemplate;
 import com.cxc.common.util.ImageUtil;
+import com.cxc.model.CurrentIssueInfo;
+import com.cxc.model.RecentIssueInfo;
 import com.cxc.model.SubmitParamBean;
 import com.cxc.model.SubmitParamItemBean;
 import com.cxc.service.RequestService;
 import com.google.common.collect.Lists;
 
 @Service("requestCb868Service")
-public class RequestCb868ServiceImpl implements RequestService {
+public class RequestCb868ServiceImpl extends BaseRequestCb868Support
+    implements RequestService {
 
     @Value("${platform.1.host}")
     private String host;
@@ -37,19 +41,17 @@ public class RequestCb868ServiceImpl implements RequestService {
     @Value("${platform.1.login.password}")
     private String password;
 
-    @Value("${platform.1.login.timeout:3000}")
+    @Value("${platform.1.login.timeout:5000}")
     private int timeout;
+
+    @Value("${platform.1.login.code.file.path}")
+    private String inputCodePath;
+
+    @Value("${platform.1.gameId}")
+    private String gameId;
 
     @Autowired
     private HttpClientTemplate httpClientTemplate;
-
-    public static final String LOGIN_GET_URI = "/cagamesclient/login/login.do?method=getVerifyImage";
-
-    public static final String LOGIN_CHECK_URI = "/cagamesclient/login/login.do?method=checkVerifyCode";
-
-    public static final String LOGIN_VALIDATE_URI = "/cagamesclient/login/login.do?method=validate";
-
-    public static final String USER_INFO_URI = "/cagamesclient/home/userInfo.do?method=getUserFund";
 
     @Override
     public boolean submit(SubmitParamBean param) {
@@ -58,76 +60,77 @@ public class RequestCb868ServiceImpl implements RequestService {
 
     @Override
     public boolean login() {
-        String s = null;
-        try {
-            s = httpClientTemplate.executeGet(host + LOGIN_GET_URI);
-            JSONObject jsonObject = JSON.parseObject(s);
-            Object data = jsonObject.get("data");
-            String tempName = System.currentTimeMillis() + ".png";
-            boolean ret = ImageUtil.generateImage(data + "",
-                imgTempPath + tempName);
-            if (ret) {
-                //todo-cxc auto recoginize
-                String verifyCode = getVerifyCode(imgTempPath + tempName);
-                org.apache.http.NameValuePair verifyCode1 = new BasicNameValuePair(
-                    "verifyCode", verifyCode);
-                ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-                nameValuePairs.add(verifyCode1);
-                String checkResult = httpClientTemplate
-                    .executePost(host + LOGIN_CHECK_URI, nameValuePairs);
-                JSONObject checkResponse = JSON.parseObject(checkResult);
-                int success = checkResponse.getIntValue("success");
-                if (success == 1) {
-                    //doLogin
-                    org.apache.http.NameValuePair usernamePair = new BasicNameValuePair(
-                        "userName", username);
-                    org.apache.http.NameValuePair userPwd = new BasicNameValuePair(
-                        "userPwd", password);
-                    org.apache.http.NameValuePair code = new BasicNameValuePair(
-                        "verifyCode", verifyCode);
-                    org.apache.http.NameValuePair channelType = new BasicNameValuePair(
-                        "channelType", "web");
-                    org.apache.http.NameValuePair timout = new BasicNameValuePair(
-                        "timeout", timeout + "");
-                    ArrayList<NameValuePair> nameValuePairs2 = Lists
-                        .newArrayList(usernamePair, userPwd, code, channelType,
-                            timout);
-                    String loginJson = httpClientTemplate.executePost(
-                        host + LOGIN_VALIDATE_URI, nameValuePairs2, "utf-8");
-                    int loginResult = JSON.parseObject(loginJson)
-                        .getIntValue("success");
-                    if (loginResult == 1) {
-                        return true;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    private String getVerifyCode(String imgPath) {
-        //todo 验证码识别处理
-        return "";
+        return super.login();
     }
 
     @Override
     public BigDecimal getResultRefund() {
-        String url = host + USER_INFO_URI;
-        try {
-            String response = httpClientTemplate.executeGet(url);
-            JSONObject jsonObject = JSON.parseObject(response);
-            int success = jsonObject.getIntValue("success");
-            if (success == 1) {
-                BigDecimal resultMoney = jsonObject
-                    .getBigDecimal("availableBalance");
-                return resultMoney;
+        return super.getResultRefund();
+    }
+
+    @Override
+    public CurrentIssueInfo getCurrentIssueInfo() {
+        return super.getCurrentIssueInfo();
+    }
+
+    @Override
+    public RecentIssueInfo getRecentIssueInfo(int pageNo, int pageSize) {
+        return super.getRecentIssueInfo(pageNo, pageSize);
+    }
+
+    @Override
+    public String getGameId() {
+        return gameId;
+    }
+
+    public String getVerifyCode(String imgPath) {
+        String code = "";
+        while (true) {
+            //read
+
+            if (StringUtils.isNotBlank(code)) {
+                break;
             }
-        } catch (IOException e) {
-            return null;
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {}
         }
-        return BigDecimal.ZERO;
+        return code;
+    }
+
+    @Override
+    public String getHost() {
+        return host;
+    }
+
+    @Override
+    public String getImgTempPath() {
+        return imgTempPath;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public int getTimeout() {
+        return timeout;
+    }
+
+    @Override
+    public String getInputCodePath() {
+        return inputCodePath;
+    }
+
+    @Override
+    public HttpClientTemplate getHttpClientTemplate() {
+        return httpClientTemplate;
     }
 
     public static void main(String[] args)
