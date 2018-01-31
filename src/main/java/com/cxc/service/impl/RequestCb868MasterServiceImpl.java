@@ -25,8 +25,8 @@ import com.cxc.model.SubmitParamItemBean;
 import com.cxc.service.RequestService;
 import com.google.common.collect.Lists;
 
-@Service("requestCb868Service")
-public class RequestCb868ServiceImpl extends BaseRequestCb868Support
+@Service("requestCb868MasterService")
+public class RequestCb868MasterServiceImpl extends BaseRequestCb868Support
     implements RequestService {
 
     @Value("${platform.1.host}")
@@ -50,12 +50,15 @@ public class RequestCb868ServiceImpl extends BaseRequestCb868Support
     @Value("${platform.1.gameId}")
     private String gameId;
 
+    @Value("${platform.1.methodId}")
+    private int methodId;
+
     @Autowired
     private HttpClientTemplate httpClientTemplate;
 
     @Override
     public boolean submit(SubmitParamBean param) {
-        return false;
+        return super.submit(param);
     }
 
     @Override
@@ -131,6 +134,11 @@ public class RequestCb868ServiceImpl extends BaseRequestCb868Support
     @Override
     public HttpClientTemplate getHttpClientTemplate() {
         return httpClientTemplate;
+    }
+
+    @Override
+    public int getMethodId() {
+        return methodId;
     }
 
     public static void main(String[] args)

@@ -2,6 +2,7 @@ package com.cxc.service.impl;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,6 +15,8 @@ import com.cxc.common.util.HttpClientTemplate;
 import com.cxc.common.util.ImageUtil;
 import com.cxc.model.CurrentIssueInfo;
 import com.cxc.model.RecentIssueInfo;
+import com.cxc.model.SubmitParamBean;
+import com.cxc.model.SubmitParamItemBean;
 import com.google.common.collect.Lists;
 
 public abstract class BaseRequestCb868Support {
@@ -29,6 +32,8 @@ public abstract class BaseRequestCb868Support {
     public static final String ISSUE_CURRENT_URI = "/cagamesclient/issue.do?method=current";
 
     public static final String ISSUE_RECENTLY_URI = "/cagamesclient/issue.do?method=recentlyCode";
+
+    public static final String SUBMIT_URI = "/cagamesclient/booking.do?method=add";
 
     protected abstract String getHost();
 
@@ -48,6 +53,8 @@ public abstract class BaseRequestCb868Support {
 
     public abstract String getGameId();
 
+    public abstract int getMethodId();
+
     protected boolean login() {
         String s = null;
         try {
@@ -58,7 +65,6 @@ public abstract class BaseRequestCb868Support {
             boolean ret = ImageUtil.generateImage(data + "",
                 getImgTempPath() + tempName);
             if (ret) {
-                //todo-cxc auto recoginize
                 String verifyCode = getVerifyCode(getImgTempPath() + tempName);
                 org.apache.http.NameValuePair verifyCode1 = new BasicNameValuePair(
                     "verifyCode", verifyCode);
@@ -151,4 +157,46 @@ public abstract class BaseRequestCb868Support {
         return null;
     }
 
+    protected boolean submit(SubmitParamBean paramBean) {
+        String url = getHost() + SUBMIT_URI;
+        org.apache.http.NameValuePair p1 = new BasicNameValuePair("gameid",
+            getGameId());
+        String issue = getCurrentIssueInfo().getIssue();
+        org.apache.http.NameValuePair p2 = new BasicNameValuePair("issue",
+            issue);
+        org.apache.http.NameValuePair p3 = new BasicNameValuePair("totalnums",
+            paramBean.getNos().size() + "");
+        org.apache.http.NameValuePair p4 = new BasicNameValuePair("totalmoney",
+            paramBean.getPrice().setScale(3, RoundingMode.HALF_UP)
+                .toPlainString());
+        org.apache.http.NameValuePair p5 = new BasicNameValuePair("type", "1");
+        org.apache.http.NameValuePair p6 = new BasicNameValuePair("isusefree",
+            "0");
+        org.apache.http.NameValuePair p7 = new BasicNameValuePair("trace", "");
+        org.apache.http.NameValuePair p8 = new BasicNameValuePair("isJoinPool",
+            "0");
+        SubmitParamItemBean item = new SubmitParamItemBean();
+        item.setMethodid(getMethodId());
+        item.setType(0);
+        item.setPos("");
+        item.setCodes(StringUtils.join(paramBean.getNos(), "|"));
+        item.setCount(paramBean.getNos().size());
+        item.setTimes(paramBean.getTime());
+        item.setMoney(paramBean.getPrice().doubleValue());
+        item.setMode(paramBean.getMode());
+        item.setUserpoint("0.0000");
+        org.apache.http.NameValuePair p9 = new BasicNameValuePair("items",
+            JSON.toJSONString(Lists.newArrayList(item)));
+        try {
+            String result = getHttpClientTemplate().executePost(url,
+                Lists.newArrayList(p1, p2, p3, p4, p5, p6, p7, p8, p9));
+            JSONObject jsonObject = JSON.parseObject(result);
+            int success = jsonObject.getIntValue("success");
+            return success == 1;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+
+    }
 }
