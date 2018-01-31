@@ -11,6 +11,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.cxc.common.util.FileUtil;
 import com.cxc.common.util.HttpClientTemplate;
 import com.cxc.common.util.ImageUtil;
 import com.cxc.model.CurrentIssueInfo;
@@ -48,8 +49,6 @@ public abstract class BaseRequestCb868Support {
     public abstract String getInputCodePath();
 
     public abstract HttpClientTemplate getHttpClientTemplate();
-
-    public abstract String getVerifyCode(String path);
 
     public abstract String getGameId();
 
@@ -197,6 +196,20 @@ public abstract class BaseRequestCb868Support {
             e.printStackTrace();
         }
         return false;
+    }
 
+    public String getVerifyCode(String imgPath) {
+        String code = "";
+        while (true) {
+            //read
+             code = FileUtil.readText(getInputCodePath());
+            if (StringUtils.isNotBlank(code)) {
+                break;
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {}
+        }
+        return code.trim();
     }
 }

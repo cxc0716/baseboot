@@ -77,21 +77,6 @@ public class RequestCb868SlaveServiceImpl extends BaseRequestCb868Support
         return gameId;
     }
 
-    public String getVerifyCode(String imgPath) {
-        String code = "";
-        while (true) {
-            //read
-
-            if (StringUtils.isNotBlank(code)) {
-                break;
-            }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {}
-        }
-        return code;
-    }
-
     @Override
     public String getHost() {
         return host;

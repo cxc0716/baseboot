@@ -7,7 +7,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,21 +83,6 @@ public class RequestCb868MasterServiceImpl extends BaseRequestCb868Support
     @Override
     public String getGameId() {
         return gameId;
-    }
-
-    public String getVerifyCode(String imgPath) {
-        String code = "";
-        while (true) {
-            //read
-
-            if (StringUtils.isNotBlank(code)) {
-                break;
-            }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {}
-        }
-        return code;
     }
 
     @Override
