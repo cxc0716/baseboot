@@ -2,7 +2,6 @@ package com.cxc.service.impl;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,11 +37,8 @@ public class RequestCb868SlaveServiceImpl extends BaseRequestCb868Support
     @Value("${platform.1.login.password2}")
     private String password;
 
-
     @Value("${platform.1.login.code.file.path2}")
     private String inputCodePath;
-
-
 
     @Autowired
     private HttpClientTemplate httpClientTemplate;
@@ -54,7 +50,15 @@ public class RequestCb868SlaveServiceImpl extends BaseRequestCb868Support
 
     @Override
     public boolean login() {
-        return super.login();
+        int maxTime = 0;
+        while (maxTime < 3) {
+            boolean ret = super.login();
+            if (ret) {
+                return ret;
+            }
+            maxTime++;
+        }
+        return false;
     }
 
     @Override

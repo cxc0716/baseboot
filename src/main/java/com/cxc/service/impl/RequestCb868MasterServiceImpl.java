@@ -62,7 +62,15 @@ public class RequestCb868MasterServiceImpl extends BaseRequestCb868Support
 
     @Override
     public boolean login() {
-        return super.login();
+        int maxTime = 0;
+        while (maxTime < 3) {
+            boolean ret = super.login();
+            if (ret) {
+                return ret;
+            }
+            maxTime++;
+        }
+        return false;
     }
 
     @Override

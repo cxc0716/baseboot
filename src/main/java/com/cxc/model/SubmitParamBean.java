@@ -15,13 +15,15 @@ public class SubmitParamBean {
 
     private int time;
 
-    private List<Integer> nos;
+    private List<String> nos;
 
     private int mode;
 
     private BigDecimal price;
 
     private boolean main;
+
+    private String issue;
 
     public int getTime() {
         return time;
@@ -31,11 +33,11 @@ public class SubmitParamBean {
         this.time = time;
     }
 
-    public List<Integer> getNos() {
+    public List<String> getNos() {
         return nos;
     }
 
-    public void setNos(List<Integer> nos) {
+    public void setNos(List<String> nos) {
         this.nos = nos;
     }
 
@@ -61,5 +63,13 @@ public class SubmitParamBean {
 
     public void setMain(boolean main) {
         this.main = main;
+    }
+
+    public String getIssue() {
+        return issue;
+    }
+
+    public void setIssue(String issue) {
+        this.issue = issue;
     }
 }

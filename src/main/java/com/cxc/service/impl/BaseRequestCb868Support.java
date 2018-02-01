@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -21,6 +23,9 @@ import com.cxc.model.SubmitParamItemBean;
 import com.google.common.collect.Lists;
 
 public abstract class BaseRequestCb868Support {
+
+    private final static Logger logger = LoggerFactory
+        .getLogger(BaseRequestCb868Support.class);
 
     public static final String LOGIN_GET_URI = "/cagamesclient/login/login.do?method=getVerifyImage";
 
@@ -91,6 +96,8 @@ public abstract class BaseRequestCb868Support {
                     String loginJson = getHttpClientTemplate().executePost(
                         getHost() + LOGIN_VALIDATE_URI, nameValuePairs2,
                         "utf-8");
+                    logger.info("[op:login] result.param={},result={}",
+                        JSON.toJSONString(nameValuePairs2), loginJson);
                     int loginResult = JSON.parseObject(loginJson)
                         .getIntValue("success");
                     if (loginResult == 1) {
@@ -160,9 +167,8 @@ public abstract class BaseRequestCb868Support {
         String url = getHost() + SUBMIT_URI;
         org.apache.http.NameValuePair p1 = new BasicNameValuePair("gameid",
             getGameId());
-        String issue = getCurrentIssueInfo().getIssue();
         org.apache.http.NameValuePair p2 = new BasicNameValuePair("issue",
-            issue);
+            paramBean.getIssue());
         org.apache.http.NameValuePair p3 = new BasicNameValuePair("totalnums",
             paramBean.getNos().size() + "");
         org.apache.http.NameValuePair p4 = new BasicNameValuePair("totalmoney",
@@ -189,6 +195,8 @@ public abstract class BaseRequestCb868Support {
         try {
             String result = getHttpClientTemplate().executePost(url,
                 Lists.newArrayList(p1, p2, p3, p4, p5, p6, p7, p8, p9));
+            logger.info("[op:submit] result.param={},response={}",
+                JSON.toJSONString(paramBean), result);
             JSONObject jsonObject = JSON.parseObject(result);
             int success = jsonObject.getIntValue("success");
             return success == 1;
@@ -202,8 +210,10 @@ public abstract class BaseRequestCb868Support {
         String code = "";
         while (true) {
             //read
-             code = FileUtil.readText(getInputCodePath());
+            code = FileUtil.readText(getInputCodePath());
             if (StringUtils.isNotBlank(code)) {
+                FileUtil.writeFile(Lists.<String>newArrayList(""),
+                    getInputCodePath());
                 break;
             }
             try {

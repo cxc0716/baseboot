@@ -10,7 +10,7 @@ import com.cxc.service.RequestProxyService;
 public class RequestProxyServiceImpl implements RequestProxyService {
     @Override
     public boolean initCheck() {
-        return false;
+        return true;
     }
 
     @Override
