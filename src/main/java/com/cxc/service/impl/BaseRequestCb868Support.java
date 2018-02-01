@@ -96,7 +96,7 @@ public abstract class BaseRequestCb868Support {
                     String loginJson = getHttpClientTemplate().executePost(
                         getHost() + LOGIN_VALIDATE_URI, nameValuePairs2,
                         "utf-8");
-                    logger.info("[op:login] result.param={},result={}",
+                    logger.debug("[op:login] result.param={},result={}",
                         JSON.toJSONString(nameValuePairs2), loginJson);
                     int loginResult = JSON.parseObject(loginJson)
                         .getIntValue("success");
@@ -107,6 +107,7 @@ public abstract class BaseRequestCb868Support {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            logger.error("[op:login] error.", e);
         }
         return false;
     }
@@ -115,6 +116,7 @@ public abstract class BaseRequestCb868Support {
         String url = getHost() + USER_INFO_URI;
         try {
             String response = getHttpClientTemplate().executeGet(url);
+            logger.debug("[op:getResultRefund] result={}", response);
             JSONObject jsonObject = JSON.parseObject(response);
             int success = jsonObject.getIntValue("success");
             if (success == 1) {
