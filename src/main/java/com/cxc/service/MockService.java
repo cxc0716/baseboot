@@ -12,7 +12,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.alibaba.fastjson.JSON;
 import com.cxc.common.util.HttpClientTemplate;
 import com.google.common.collect.Lists;
 
@@ -59,7 +58,7 @@ public class MockService {
                         item.setNo(attr.getValue());
                     }
                 }
-                list.add(0,item);
+                list.add(0, item);
             }
         } catch (DocumentException e) {
             // TODO Auto-generated catch block
@@ -68,8 +67,9 @@ public class MockService {
         return list;
     }
 
-    public  static class Item{
+    public static class Item {
         private String no;
+
         private String code;
 
         public String getNo() {
