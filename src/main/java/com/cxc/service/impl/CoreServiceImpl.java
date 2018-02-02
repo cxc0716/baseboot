@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -30,6 +33,7 @@ public class CoreServiceImpl {
     /**
      * //todo-cxc
      * <ul>
+     * <li>code可配</li>
      * <li>alert</li>
      * <li>连中指定次数reset</li>
      * <li>以money来判断是否停止</li>
@@ -41,9 +45,6 @@ public class CoreServiceImpl {
 
     private final static Logger logger = LoggerFactory
         .getLogger(CoreServiceImpl.class);
-
-    @Autowired
-    private InitConfig initConfig;
 
     @Autowired
     private RequestProxyService requestProxyService;
@@ -69,10 +70,13 @@ public class CoreServiceImpl {
     public static int INIT_TIMES = 1;
 
     //连续命中次数
-    private int hitCount = 1;
+    private int hitCount = 0;
 
     //当前投入本金
     private BigDecimal currentCapital;
+
+    //    Queue<Boolean> hitRecordQueue = new ArrayBlockingQueue<Boolean>(
+    //        maxHitCount);
 
     public void submit() {
         //login 
@@ -273,7 +277,8 @@ public class CoreServiceImpl {
         } else if (mode == SubmitParamBean.MODE_LI) {
             result = new BigDecimal(0.1);
         }
-        BigDecimal bigDecimal = currentCapital.setScale(0, RoundingMode.HALF_UP);
+        BigDecimal bigDecimal = currentCapital.setScale(0,
+            RoundingMode.HALF_UP);
         return bigDecimal.divide(result).intValue();
     }
 
@@ -316,6 +321,7 @@ public class CoreServiceImpl {
             MockService.Item item = historyList.get(idx);
             idx++;
             if (idx >= historyList.size()) {
+                mList.add(total);
                 break;
             }
             CurrentIssueInfo currentIssueInfo = new CurrentIssueInfo();
@@ -428,18 +434,35 @@ public class CoreServiceImpl {
                     }
                 }
             }
-            /*if (hitCount >= maxHitCount) {
-                logger.info("[op:submit] hit {} times continuously", hitCount);
-                break;
-            }*/
-            if(total.compareTo(new BigDecimal(10)) > 0){
+            /*
+             * if (hitCount >= maxHitCount) {
+             * logger.info("[op:submit] hit {} times continuously", hitCount);
+             * break; }
+             */
+            if (total.compareTo(new BigDecimal(100)) > 0) {
+                mList.add(total);
                 break;
             }
         }
     }
 
+   static List<BigDecimal> mList = Lists.newArrayList();
+
     public static void main(String[] args) throws IOException {
+        List<String> dateList = Lists.newArrayList();
         CoreServiceImpl coreService = new CoreServiceImpl();
-        coreService.simulate("20180102");
+        for (int i = 1; i <= 31; i++) {
+            String suffix = i < 10 ? "0" + i : i + "";
+            coreService.simulate("201712" + suffix);
+            System.out.println("#############");
+        }
+
+        BigDecimal result = BigDecimal.ZERO;
+        for (BigDecimal bigDecimal : mList) {
+            System.out.println("record-->"+bigDecimal.setScale(3,RoundingMode.HALF_UP).toPlainString());
+            result = result.add(bigDecimal);
+        }
+        System.out.println("result-->"+result.setScale(3,RoundingMode.HALF_UP));
+
     }
 }

@@ -23,9 +23,12 @@ public class RandomCodeGenerator {
     public static List<String> getCode(int num) {
         Set<String> result = Sets.newHashSet();
         Random random = new Random();
+        int start = 0;
         while (true) {
             int val = random.nextInt(100);
-            result.add(int2Str(val));
+            //todo-cxc to recover
+            result.add(int2Str(start));
+            start++;
             if (result.size() == num) {
                 break;
             }

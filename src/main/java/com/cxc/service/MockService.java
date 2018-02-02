@@ -38,8 +38,8 @@ public class MockService {
         SAXReader reader = new SAXReader();
         try {
             // 通过reader对象的read方法加载books.xml文件,获取docuemnt对象。
-            url = String.format(url, date);
-            Document document = reader.read(url);
+            String newUrl = String.format(url, date);
+            Document document = reader.read(newUrl);
             // 通过document对象获取根节点bookstore
             Element bookStore = document.getRootElement();
             // 通过element对象的elementIterator方法获取迭代器

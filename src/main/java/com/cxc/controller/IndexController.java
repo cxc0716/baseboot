@@ -2,19 +2,18 @@ package com.cxc.controller;
 
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import com.cxc.common.util.PasswordEncoder;
 import com.cxc.domain.HiUser;
-import com.cxc.model.YesNo;
 import com.cxc.service.UserService;
 import com.cxc.vo.AjaxResult;
 import com.cxc.vo.UserSimpleInfo;
@@ -44,45 +43,7 @@ public class IndexController extends BaseController {
     @ResponseBody
     public AjaxResult doLogin(HiUser user, HttpServletRequest request,
         HttpServletResponse response, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return initFailureResult(
-                bindingResult.getFieldError().getDefaultMessage());
-        }
-        user.setPassword(PasswordEncoder.encodeMd5Password(user.getPassword()));
-        try {
-            HiUser hiUser = userService.queryByUsernameAndPassword(user);
-            if (hiUser == null) {
-				return initFailureResult("用户名或密码不正确");
-			} else {
-				Integer deleted = hiUser.getDeleted();
-				if (deleted != null && deleted.intValue() == 1) {
-					return initFailureResult("用户已被删除");
-				}
-				Integer accountLocked = hiUser.getAccountLocked();
-				if (accountLocked != null && accountLocked.intValue() == YesNo.YESNO_YES) {
-					return initFailureResult("帐号被锁定，请联系管理员");
-				}
-				Integer accountEnabled = hiUser.getAccountEnabled();
-				if (accountEnabled != null && accountEnabled.intValue() == YesNo.YESNO_NO) {
-					return initFailureResult("帐号不可用，请联系管理员");
-				}
-				Date expiredDate = hiUser.getExpiredDate();
-				Date date = new Date();
-				if (expiredDate != null && date.compareTo(expiredDate) > 0) {
-					return initFailureResult("帐号已过期，请联系管理员");
-				}
-				UserSimpleInfo userSimpleInfo = new UserSimpleInfo();
-				userSimpleInfo.setId(hiUser.getId());
-				userSimpleInfo.setUserName(hiUser.getUserName());
-				userSimpleInfo.setNote(hiUser.getDescription());
-				HttpSession session = request.getSession();
-				session.setAttribute("user", userSimpleInfo);
-				return initSuccessResult();
-			}
-        } catch (Exception e) {
-            logger.error("[doLogin] query error" ,e);
-            return initFailureResult("登录失败");
-        }
+        return initSuccessResult();
     }
 
     @RequestMapping("/login")
