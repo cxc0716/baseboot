@@ -67,7 +67,7 @@ public class CoreServiceImpl {
     @Value("${platform.issue.mode}")
     private int mode;
 
-    public static int INIT_TIMES = 1;
+    public static int INIT_TIMES = 10;
 
     //连续命中次数
     private int hitCount = 0;
@@ -453,7 +453,7 @@ public class CoreServiceImpl {
         CoreServiceImpl coreService = new CoreServiceImpl();
         for (int i = 1; i <= 31; i++) {
             String suffix = i < 10 ? "0" + i : i + "";
-            coreService.simulate("201712" + suffix);
+            coreService.simulate("201801" + suffix);
             System.out.println("#############");
         }
 
